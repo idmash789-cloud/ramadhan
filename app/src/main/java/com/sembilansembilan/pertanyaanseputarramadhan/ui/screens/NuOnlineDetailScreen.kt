@@ -31,7 +31,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.MarkdownText
 
 /**
- * Isi satu artikel Kajian NU Online + atribusi sumber di bawahnya.
+ * Isi satu artikel Kajian Tambahan.
  * Bookmark memakai kunci "n:<articleId>".
  */
 @Composable
@@ -96,18 +96,5 @@ fun NuOnlineDetailScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
         MarkdownText(content = article.content)
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Sumber: NU Online",
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = article.source,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }

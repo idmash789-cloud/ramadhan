@@ -3,6 +3,7 @@ package com.sembilansembilan.pertanyaanseputarramadhan.ui.screens
 import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -74,117 +78,152 @@ fun KultumDetailScreen(
 
     val bookmarked = "k:${kultum.night}" in settings.bookmarks
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
+    Column(Modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onBack) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Kembali"
-                )
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Malam ${kultum.night}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = kultum.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            IconButton(
-                onClick = { settingsVm.toggleBookmark("k:${kultum.night}") }
-            ) {
-                Icon(
-                    imageVector = if (bookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                    contentDescription = if (bookmarked) "Hapus bookmark" else "Simpan bookmark",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+            Text("Ukuran teks", style = MaterialTheme.typography.labelLarge)
+            TextButton(
+                onClick = { settingsVm.adjustKultumTextSize(-1) },
+                enabled = settings.kultumTextSizeStep > -1,
+                modifier = Modifier.semantics { contentDescription = "Perkecil teks kultum" }
+            ) { Text("A−") }
+            TextButton(
+                onClick = { settingsVm.adjustKultumTextSize(1) },
+                enabled = settings.kultumTextSizeStep < 3,
+                modifier = Modifier.semantics { contentDescription = "Perbesar teks kultum" }
+            ) { Text("A+") }
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = kultum.theme,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        kultum.quote?.let { quote ->
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "\"$quote\"",
-                style = MaterialTheme.typography.bodyMedium,
-                fontStyle = FontStyle.Italic
-            )
-            kultum.quoteSource?.let { source ->
-                Text(
-                    text = source,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-        MarkdownText(content = kultum.content)
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
-            TextButton(
-                onClick = {
-                    val shareText = buildKultumShareText(kultum)
-                    val intent = Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, shareText)
-                    }
-                    context.startActivity(
-                        Intent.createChooser(intent, "Bagikan kultum")
-                    )
-                    (context as? Activity)?.let { activity ->
-                        InterstitialGate.maybeShow(activity)
-                    }
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Share,
-                    contentDescription = "Bagikan"
-                )
-                Text("Bagikan")
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Kembali"
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Malam ${kultum.night}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = kultum.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                IconButton(
+                    onClick = { settingsVm.toggleBookmark("k:${kultum.night}") }
+                ) {
+                    Icon(
+                        imageVector = if (bookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                        contentDescription = if (bookmarked) "Hapus bookmark" else "Simpan bookmark",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-            TextButton(
-                onClick = {
-                    clipboardManager.setText(
-                        AnnotatedString(
-                            buildKultumShareText(kultum)
-                        )
-                    )
-                    Toast.makeText(context, "Disalin", Toast.LENGTH_SHORT).show()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ContentCopy,
-                    contentDescription = "Salin"
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = kultum.theme,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            val baseTypography = MaterialTheme.typography
+            val factor = 1f + settings.kultumTextSizeStep * 0.2f
+            MaterialTheme(
+                typography = baseTypography.copy(
+                    bodySmall = baseTypography.bodySmall.scaled(factor),
+                    bodyMedium = baseTypography.bodyMedium.scaled(factor),
+                    bodyLarge = baseTypography.bodyLarge.scaled(factor),
+                    titleMedium = baseTypography.titleMedium.scaled(factor),
+                    titleLarge = baseTypography.titleLarge.scaled(factor),
                 )
-                Text("Salin")
+            ) {
+                kultum.quote?.let { quote ->
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "\"$quote\"",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontStyle = FontStyle.Italic
+                    )
+                    kultum.quoteSource?.let { source ->
+                        Text(
+                            text = source,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                MarkdownText(content = kultum.content)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End
+            ) {
+                TextButton(
+                    onClick = {
+                        val shareText = buildKultumShareText(kultum)
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                        }
+                        context.startActivity(
+                            Intent.createChooser(intent, "Bagikan kultum")
+                        )
+                        (context as? Activity)?.let { activity ->
+                            InterstitialGate.maybeShow(activity)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Share,
+                        contentDescription = "Bagikan"
+                    )
+                    Text("Bagikan")
+                }
+                TextButton(
+                    onClick = {
+                        clipboardManager.setText(
+                            AnnotatedString(
+                                buildKultumShareText(kultum)
+                            )
+                        )
+                        Toast.makeText(context, "Disalin", Toast.LENGTH_SHORT).show()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ContentCopy,
+                        contentDescription = "Salin"
+                    )
+                    Text("Salin")
+                }
             }
         }
     }
 }
+
+private fun TextStyle.scaled(factor: Float): TextStyle =
+    copy(fontSize = fontSize * factor, lineHeight = lineHeight * factor)
 
 private fun buildKultumShareText(kultum: com.sembilansembilan.pertanyaanseputarramadhan.data.Kultum): String {
     val builder = StringBuilder()

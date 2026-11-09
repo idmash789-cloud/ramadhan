@@ -185,14 +185,12 @@ membatasi proses latar belakang.
   `docs/app-ads.txt` dengan publisher ID asli (ganti
   `pub-XXXXXXXXXXXXXXXX`), lalu host file itu di root domain yang
   dideklarasikan di Play Console.
-- Penempatan sopan: banner adaptive di bawah konten (Beranda + daftar
-  Pertanyaan + daftar PISS-KTB); interstitial **maks 1x per sesi DAN jeda
-  ≥ 3 menit**, hanya setelah aksi selesai (mis. setelah membagikan jawaban).
-  Tidak ada banner di daftar/artikel Kajian NU Online dan Kultum (sama
-  seperti Buku Saku). Layar Kalkulator Zakat, Puasa Sunnah, dan Tadarus
-  juga TANPA iklan.
-- UMP Consent SDK aktif: formulir persetujuan Google tampil saat
-  pertama dibuka bila diwajibkan.
+- Banner adaptif tetap di bawah layar, terpisah dari menu di atas.
+- Native berlabel Iklan tampil setelah setiap 8 entri jika masih ada
+  konten berikutnya. Di Tadarus, jedanya 12 juz (4 baris).
+- Interstitial maksimal sekali per sesi dengan jeda minimal 3 menit,
+  setelah tindakan yang sudah menggunakan pemicu berbagi.
+- Permintaan iklan mengikuti status `canRequestAds()` dari UMP.
 - QW-3: `AdMobHelper.initialize` memasang `RequestConfiguration` dengan
   `maxAdContentRating = "G"` (General audiences — paling aman untuk
   aplikasi keluarga) SEBELUM `MobileAds.initialize`. Rating "G" saja TIDAK

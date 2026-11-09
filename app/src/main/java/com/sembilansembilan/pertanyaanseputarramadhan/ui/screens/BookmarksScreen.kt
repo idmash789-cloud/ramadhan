@@ -143,7 +143,7 @@ fun BookmarksScreen(
 
         if (bookmarkedArticles.isNotEmpty()) {
             item {
-                SectionTitle("Kajian NU Online")
+                SectionTitle("Kajian Tambahan")
             }
             items(bookmarkedArticles, key = { "n:${it.id}" }) { article ->
                 Card(
@@ -174,7 +174,7 @@ fun BookmarksScreen(
 
         if (bookmarkedPiss.isNotEmpty()) {
             item {
-                SectionTitle("Tanya Jawab PISS-KTB")
+                SectionTitle("Tanya Jawab Tambahan")
             }
             items(bookmarkedPiss, key = { "p:${it.id}" }) { question ->
                 Card(

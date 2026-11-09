@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -28,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.itemsWithNativeAds
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import com.sembilansembilan.pertanyaanseputarramadhan.data.PissQuestion
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.PissKtbViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdBanner
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.RatingPromptDialog
 import com.sembilansembilan.pertanyaanseputarramadhan.util.InterstitialGate
@@ -92,6 +91,11 @@ fun PissKtbScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            "Tanya Jawab Tambahan",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(start = 16.dp, top = 12.dp)
+        )
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { pissVm.setSearchQuery(it) },
@@ -135,7 +139,7 @@ fun PissKtbScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                items(questions, key = { it.id }) { question ->
+                itemsWithNativeAds(questions, key = { it.id }) { question ->
                     PissQuestionCard(
                         question = question,
                         expanded = expandedId == question.id,
@@ -147,8 +151,6 @@ fun PissKtbScreen(
                 }
             }
         }
-
-        AdBanner(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
     }
 }
 
@@ -223,13 +225,6 @@ private fun PissQuestionCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Sumber: PISS-KTB — ${question.source}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -291,7 +286,6 @@ private fun buildPissShareText(question: PissQuestion): String {
     builder.append(question.question).append("\n\n")
     builder.append(question.answer)
     question.reference?.let { builder.append("\n\nReferensi: ").append(it) }
-    builder.append("\n\nSumber: PISS-KTB — ").append(question.source)
     builder.append("\n\n— 99 Pertanyaan Seputar Ramadhan")
     return builder.toString()
 }

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
@@ -47,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,6 +55,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.JUZ_LIST
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.JuzInfo
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.TadarusUiState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.TadarusViewModel
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdNativeCard
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.SectionTitle
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatTanggalIndonesia
 import java.time.Instant
@@ -116,12 +117,17 @@ fun TadarusScreen(tadarusVm: TadarusViewModel) {
         item(span = { GridItemSpan(3) }) {
             SectionTitle("Daftar Juz")
         }
-        items(JUZ_LIST, key = { it.number }) { juz ->
-            JuzItem(
-                juz = juz,
-                done = juz.number in state.completedJuz,
-                onToggle = { tadarusVm.toggleJuz(juz.number) }
-            )
+        JUZ_LIST.forEachIndexed { index, juz ->
+            if (index > 0 && index % 12 == 0) {
+                item(key = "ad:$index", span = { GridItemSpan(3) }) { AdNativeCard() }
+            }
+            item(key = juz.number) {
+                JuzItem(
+                    juz = juz,
+                    done = juz.number in state.completedJuz,
+                    onToggle = { tadarusVm.toggleJuz(juz.number) }
+                )
+            }
         }
         item(span = { GridItemSpan(3) }) {
             Text(
@@ -350,6 +356,10 @@ private fun ReminderCard(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
 
 @Composable
 private fun JuzItem(juz: JuzInfo, done: Boolean, onToggle: () -> Unit) {
+    val cardHeight = 42.dp + with(LocalDensity.current) {
+        (MaterialTheme.typography.titleSmall.lineHeight +
+            MaterialTheme.typography.bodySmall.lineHeight * 3).toDp()
+    }
     Card(
         onClick = onToggle,
         colors = CardDefaults.cardColors(
@@ -359,11 +369,12 @@ private fun JuzItem(juz: JuzInfo, done: Boolean, onToggle: () -> Unit) {
                 MaterialTheme.colorScheme.surface
             }
         ),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().height(cardHeight)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Icon(
                 imageVector = if (done) {

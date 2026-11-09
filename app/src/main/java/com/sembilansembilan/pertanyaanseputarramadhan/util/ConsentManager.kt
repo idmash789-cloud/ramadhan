@@ -8,8 +8,7 @@ import com.google.android.ump.UserMessagingPlatform
 /**
  * UMP Consent SDK: cek apakah persetujuan diperlukan saat aplikasi dibuka,
  * tampilkan formulir persetujuan Google bila perlu, baru kemudian inisialisasi iklan.
- * Jika permintaan persetujuan gagal (mis. offline), iklan tetap diinisialisasi;
- * tidak ada status persetujuan yang dikarang.
+ * Permintaan iklan hanya diizinkan jika UMP menyatakan iklan boleh diminta.
  */
 object ConsentManager {
     fun requestConsent(activity: Activity, onDone: () -> Unit) {
@@ -21,10 +20,10 @@ object ConsentManager {
             params,
             {
                 UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) { _ ->
-                    onDone()
+                    if (consentInformation.canRequestAds()) onDone()
                 }
             },
-            { _ -> onDone() }
+            { _ -> if (consentInformation.canRequestAds()) onDone() }
         )
     }
 }

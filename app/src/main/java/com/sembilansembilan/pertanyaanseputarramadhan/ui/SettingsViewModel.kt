@@ -17,6 +17,10 @@ class SettingsViewModel(private val settingsStore: SettingsStore) : ViewModel() 
     val settings: StateFlow<AppSettings> = settingsStore.settings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
+    fun adjustKultumTextSize(delta: Int) {
+        viewModelScope.launch { settingsStore.adjustKultumTextSize(delta) }
+    }
+
     fun setDarkMode(mode: DarkMode) {
         viewModelScope.launch { settingsStore.setDarkMode(mode) }
     }

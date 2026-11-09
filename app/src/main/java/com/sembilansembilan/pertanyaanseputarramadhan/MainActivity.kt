@@ -3,7 +3,11 @@ package com.sembilansembilan.pertanyaanseputarramadhan
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
@@ -40,6 +44,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SunnahViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.TadarusViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.ZakatViewModel
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdBanner
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BookmarksScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BukuSakuDetailScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BukuSakuScreen
@@ -66,8 +71,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val settingsStore = SettingsStore(applicationContext)
-        // UMP consent dulu; iklan diinisialisasi setelah alur persetujuan
-        // selesai (atau gagal — mis. offline — iklan tetap jalan).
+        // Inisialisasi iklan setelah UMP mengizinkan permintaan iklan.
         ConsentManager.requestConsent(this) {
             AdMobHelper.initialize(this)
         }
@@ -135,16 +139,22 @@ fun AppNav(
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route ?: "home"
     Scaffold(
-        bottomBar = {
-            NavigationBar {
+        topBar = {
+            NavigationBar(
+                windowInsets = WindowInsets.statusBars.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+            ) {
                 for (tab in tabs) {
                     NavigationBarItem(
                         selected = currentRoute == tab.route,
                         onClick = {
-                            navController.navigate(tab.route) {
-                                popUpTo("home") { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
+                            if (tab.route == "home") {
+                                navController.popBackStack("home", inclusive = false)
+                            } else {
+                                navController.navigate(tab.route) {
+                                    popUpTo("home") { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
                         },
                         icon = { Icon(tab.icon, contentDescription = tab.label) },
@@ -152,7 +162,8 @@ fun AppNav(
                     )
                 }
             }
-        }
+        },
+        bottomBar = { AdBanner() }
     ) { padding ->
         NavHost(
             navController = navController,

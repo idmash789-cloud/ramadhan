@@ -80,6 +80,7 @@ enum class DarkMode { SYSTEM, LIGHT, DARK }
 
 data class AppSettings(
     val darkMode: DarkMode = DarkMode.SYSTEM,
+    val kultumTextSizeStep: Int = 0,
     val cityName: String = "Jakarta",
     val remindersEnabled: Boolean = false,
     /**

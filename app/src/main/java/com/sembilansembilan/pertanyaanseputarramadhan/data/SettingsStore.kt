@@ -19,6 +19,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class SettingsStore(private val context: Context) {
     private object Keys {
+        val KULTUM_TEXT_SIZE_STEP = intPreferencesKey("kultum_text_size_step")
         val DARK_MODE = stringPreferencesKey("dark_mode")
         val CITY_NAME = stringPreferencesKey("city_name")
         val REMINDERS_ENABLED = booleanPreferencesKey("reminders_enabled")
@@ -47,6 +48,7 @@ class SettingsStore(private val context: Context) {
         }
         AppSettings(
             darkMode = darkMode,
+            kultumTextSizeStep = (prefs[Keys.KULTUM_TEXT_SIZE_STEP] ?: 0).coerceIn(-1, 3),
             cityName = prefs[Keys.CITY_NAME] ?: "Jakarta",
             remindersEnabled = prefs[Keys.REMINDERS_ENABLED] ?: false,
             bookmarks = prefs[Keys.BOOKMARKS] ?: emptySet(),
@@ -64,6 +66,13 @@ class SettingsStore(private val context: Context) {
     }
 
     suspend fun getSettings(): AppSettings = settings.first()
+
+    suspend fun adjustKultumTextSize(delta: Int) {
+        context.dataStore.edit { prefs ->
+            val step = prefs[Keys.KULTUM_TEXT_SIZE_STEP] ?: 0
+            prefs[Keys.KULTUM_TEXT_SIZE_STEP] = (step + delta).coerceIn(-1, 3)
+        }
+    }
 
     suspend fun setDarkMode(mode: DarkMode) {
         context.dataStore.edit { prefs ->

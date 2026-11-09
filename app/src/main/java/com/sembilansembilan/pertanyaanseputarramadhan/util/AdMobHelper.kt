@@ -2,14 +2,14 @@ package com.sembilansembilan.pertanyaanseputarramadhan.util
 
 import android.app.Activity
 import android.content.Context
-import android.util.DisplayMetrics
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * AdMob helper — TEST ad unit IDs only, never ship production IDs from here.
@@ -18,8 +18,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
  *
  * Placement rules (locked, demi kenyamanan pengguna — iklan mengganggu adalah
  * keluhan #1 di kategori aplikasi Ramadhan):
- * - Banner: ADAPTIVE banner di BAWAH konten (Beranda + daftar Pertanyaan),
- *   tidak pernah menutupi tombol atau isi.
+ * - Banner tetap di bawah, native disisipkan di daftar.
  * - Interstitial: MAKS 1x per sesi DAN jeda >= 3 menit (lihat InterstitialGate),
  *   hanya di jeda natural (mis. setelah membagikan jawaban), tidak pernah
  *   saat aplikasi dibuka dan tidak pernah menutupi konten yang sedang dibaca.
@@ -27,9 +26,14 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 object AdMobHelper {
 
     const val BANNER_TEST_ID = "ca-app-pub-3940256099942544/6300978111"
+    const val NATIVE_TEST_ID = "ca-app-pub-3940256099942544/2247696110"
     const val INTERSTITIAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712"
 
+    private val _adsReady = MutableStateFlow(false)
+    val adsReady = _adsReady.asStateFlow()
+
     fun initialize(context: Context) {
+        if (_adsReady.value) return
         // QW-3 — rating konten iklan "G" (General audiences, paling aman
         // untuk aplikasi keluarga). Ini membatasi iklan ke konten yang cocok
         // untuk semua umur; pemblokiran kategori sensitif (judi, pinjol,
@@ -40,25 +44,11 @@ object AdMobHelper {
                 .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
                 .build()
         )
-        MobileAds.initialize(context)
+        MobileAds.initialize(context.applicationContext) { _adsReady.value = true }
     }
 
-    /** Anchored adaptive banner sized for the current screen width. */
-    fun adaptiveBannerSize(context: Context): AdSize {
-        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-        val widthPixels = displayMetrics.widthPixels.toFloat()
-        val density = displayMetrics.density
-        val adWidth = (widthPixels / density).toInt()
-        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth)
-    }
-
-    fun createBannerAdView(context: Context): AdView {
-        return AdView(context).apply {
-            setAdSize(adaptiveBannerSize(context))
-            adUnitId = BANNER_TEST_ID
-            loadAd(AdRequest.Builder().build())
-        }
-    }
+    fun adaptiveBannerSize(context: Context, widthDp: Int): AdSize =
+        AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, widthDp)
 
     fun loadInterstitial(context: Context, onLoaded: (InterstitialAd?) -> Unit) {
         InterstitialAd.load(
@@ -87,13 +77,16 @@ object InterstitialGate {
     private const val MIN_GAP_MS = 3 * 60 * 1000L
     private var lastShownMs: Long = 0L
     private var shownThisSession: Boolean = false
+    private var loading = false
 
     fun maybeShow(activity: Activity) {
         val now = System.currentTimeMillis()
-        if (shownThisSession) return
+        if (!AdMobHelper.adsReady.value || shownThisSession || loading) return
         if (now - lastShownMs < MIN_GAP_MS) return
+        loading = true
         AdMobHelper.loadInterstitial(activity) { ad ->
-            if (ad != null) {
+            loading = false
+            if (ad != null && !activity.isFinishing && !activity.isDestroyed) {
                 shownThisSession = true
                 lastShownMs = System.currentTimeMillis()
                 ad.show(activity)

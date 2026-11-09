@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -27,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.itemsWithNativeAds
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import com.sembilansembilan.pertanyaanseputarramadhan.data.Question
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.QuestionsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdBanner
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.RatingPromptDialog
 import com.sembilansembilan.pertanyaanseputarramadhan.util.InterstitialGate
@@ -133,7 +132,7 @@ fun QuestionsScreen(
                     vertical = 8.dp
                 )
             ) {
-                items(questions, key = { it.id }) { question ->
+                itemsWithNativeAds(questions, key = { it.id }) { question ->
                     QuestionCard(
                         question = question,
                         expanded = expandedId == question.id,
@@ -145,8 +144,6 @@ fun QuestionsScreen(
                 }
             }
         }
-
-        AdBanner(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
     }
 }
 

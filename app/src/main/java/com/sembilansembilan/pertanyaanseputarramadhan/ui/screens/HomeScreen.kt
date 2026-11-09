@@ -3,6 +3,7 @@ package com.sembilansembilan.pertanyaanseputarramadhan.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,13 +37,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.HijriCalendar
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.HomeViewModel
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdBanner
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.SectionTitle
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatHitungMundur
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatJam
@@ -82,7 +83,7 @@ fun HomeScreen(
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
                     text = "99 Pertanyaan Seputar Ramadhan",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -189,208 +190,46 @@ fun HomeScreen(
             Text("Bagikan sebagai Gambar")
         }
 
-        // Dua kartu menu.
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ElevatedCard(
-                onClick = onOpenBukuSaku,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.MenuBook,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Buku Saku Ramadhan",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-            ElevatedCard(
-                onClick = onOpenQuestions,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.QuestionAnswer,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "99 Pertanyaan",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+        val menu = listOf(
+            HomeMenuItem("Buku Saku Ramadhan", Icons.Filled.MenuBook, onOpenBukuSaku),
+            HomeMenuItem("99 Pertanyaan", Icons.Filled.QuestionAnswer, onOpenQuestions),
+            HomeMenuItem("Kajian Tambahan", Icons.Filled.Article, onOpenNu),
+            HomeMenuItem("Tanya Jawab Tambahan", Icons.Filled.Forum, onOpenPiss),
+            HomeMenuItem("Kultum Ramadhan", Icons.Filled.Mic, onOpenKultum),
+            HomeMenuItem("Kalkulator Zakat", Icons.Filled.Calculate, onOpenZakat),
+            HomeMenuItem("Puasa Sunnah", Icons.Filled.DateRange, onOpenSunnah),
+            HomeMenuItem("Tadarus 30 Juz", Icons.Filled.Book, onOpenTadarus),
+        )
+        val menuHeight = 72.dp + with(androidx.compose.ui.platform.LocalDensity.current) {
+            (MaterialTheme.typography.titleSmall.lineHeight * 3).toDp()
         }
-
-        // Tiga kartu menu seksi baru.
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ElevatedCard(
-                onClick = onOpenNu,
-                modifier = Modifier.weight(1f)
+        for (row in menu.chunked(2)) {
+            Row(
+                modifier = Modifier.fillMaxWidth().height(menuHeight),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Article,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Kajian NU Online",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-            ElevatedCard(
-                onClick = onOpenPiss,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Forum,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Tanya Jawab PISS-KTB",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-            ElevatedCard(
-                onClick = onOpenKultum,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Mic,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Kultum Ramadhan",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-        }
-
-        // Kartu menu Quick Wins (QW-2 Kalkulator Zakat, QW-4 Puasa Sunnah,
-        // QW-5 Tadarus) — digabung satu baris agar Beranda tetap rapi.
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ElevatedCard(
-                onClick = onOpenZakat,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Calculate,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Kalkulator Zakat",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-            ElevatedCard(
-                onClick = onOpenSunnah,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.DateRange,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Puasa Sunnah",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-            ElevatedCard(
-                onClick = onOpenTadarus,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Book,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Tadarus 30 Juz",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
+                for (item in row) {
+                    ElevatedCard(onClick = item.onClick, modifier = Modifier.weight(1f).fillMaxHeight()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = item.title,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -403,9 +242,10 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        AdBanner()
     }
 }
+
+private data class HomeMenuItem(val title: String, val icon: ImageVector, val onClick: () -> Unit)
 
 @Composable
 private fun JadwalRow(label: String, time: LocalTime) {
