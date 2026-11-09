@@ -136,8 +136,8 @@ private val tabs = listOf(
     Tab("home", "Beranda", Icons.Filled.Home),
     Tab("questions", "99 Tanya", Icons.Filled.QuestionAnswer),
     Tab("bukusaku", "Buku Saku", Icons.Filled.MenuBook),
-    Tab("bookmarks", "Bookmark", Icons.Filled.Bookmark),
-    Tab("settings", "Pengaturan", Icons.Filled.Settings)
+    Tab("bookmarks", "Simpan", Icons.Filled.Bookmark),
+    Tab("settings", "Setelan", Icons.Filled.Settings)
 )
 
 @Composable
