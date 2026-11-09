@@ -188,8 +188,10 @@ membatasi proses latar belakang.
 - Banner adaptif tetap di bawah layar, terpisah dari menu di atas.
 - Native berlabel Iklan tampil setelah setiap 8 entri jika masih ada
   konten berikutnya. Di Tadarus, jedanya 12 juz (4 baris).
-- Interstitial maksimal sekali per sesi dengan jeda minimal 3 menit,
-  setelah tindakan yang sudah menggunakan pemicu berbagi.
+- Interstitial maksimal sekali per sesi. Iklan hanya dapat muncul saat
+  kembali dari detail Buku Saku, Kajian Tambahan, atau Kultum setelah tiga
+  kunjungan baca minimal 20 detik. Jika iklan belum siap, pengguna langsung
+  kembali tanpa menunggu.
 - Permintaan iklan mengikuti status `canRequestAds()` dari UMP.
 - QW-3: `AdMobHelper.initialize` memasang `RequestConfiguration` dengan
   `maxAdContentRating = "G"` (General audiences — paling aman untuk

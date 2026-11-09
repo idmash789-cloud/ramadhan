@@ -1,6 +1,5 @@
 package com.sembilansembilan.pertanyaanseputarramadhan.ui.screens
 
-import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +42,6 @@ import com.sembilansembilan.pertanyaanseputarramadhan.data.kultumRamadhan
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.MarkdownText
-import com.sembilansembilan.pertanyaanseputarramadhan.util.InterstitialGate
 
 /**
  * Isi satu kultum: judul, tema, kutipan, isi, bagikan/salin.
@@ -190,9 +188,6 @@ fun KultumDetailScreen(
                         context.startActivity(
                             Intent.createChooser(intent, "Bagikan kultum")
                         )
-                        (context as? Activity)?.let { activity ->
-                            InterstitialGate.maybeShow(activity)
-                        }
                     }
                 ) {
                     Icon(

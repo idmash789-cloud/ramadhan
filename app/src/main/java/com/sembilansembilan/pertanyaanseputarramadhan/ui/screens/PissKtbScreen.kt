@@ -1,6 +1,5 @@
 package com.sembilansembilan.pertanyaanseputarramadhan.ui.screens
 
-import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +47,6 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.PissKtbViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.RatingPromptDialog
-import com.sembilansembilan.pertanyaanseputarramadhan.util.InterstitialGate
 
 /**
  * Daftar Tanya Jawab PISS-KTB (20 tanya-jawab fikih puasa, diparafrase
@@ -249,9 +247,6 @@ private fun PissQuestionCard(
                             )
                             // QW-1: bagikan jawaban = salah satu pemicu prompt rating.
                             onShared()
-                            (context as? Activity)?.let { activity ->
-                                InterstitialGate.maybeShow(activity)
-                            }
                         }
                     ) {
                         Icon(

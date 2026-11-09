@@ -2,8 +2,11 @@ package com.sembilansembilan.pertanyaanseputarramadhan.util
 
 import android.app.Activity
 import android.content.Context
+import android.os.SystemClock
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -19,9 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * Placement rules (locked, demi kenyamanan pengguna — iklan mengganggu adalah
  * keluhan #1 di kategori aplikasi Ramadhan):
  * - Banner tetap di bawah, native disisipkan di daftar.
- * - Interstitial: MAKS 1x per sesi DAN jeda >= 3 menit (lihat InterstitialGate),
- *   hanya di jeda natural (mis. setelah membagikan jawaban), tidak pernah
- *   saat aplikasi dibuka dan tidak pernah menutupi konten yang sedang dibaca.
+ * - Interstitial: maksimal sekali per sesi saat kembali dari bacaan.
  */
 object AdMobHelper {
 
@@ -68,29 +69,64 @@ object AdMobHelper {
     }
 }
 
-/**
- * Penjaga interstitial: maks 1x per sesi DAN jeda minimal 3 menit antar tayang.
- * Panggil [maybeShow] hanya di jeda natural (mis. setelah pengguna membagikan
- * jawaban). Jika syarat tidak terpenuhi, tidak terjadi apa-apa.
- */
+/** Menayangkan iklan yang sudah siap pada jeda setelah membaca. */
 object InterstitialGate {
-    private const val MIN_GAP_MS = 3 * 60 * 1000L
-    private var lastShownMs: Long = 0L
-    private var shownThisSession: Boolean = false
+    private const val MIN_READING_TIME_MS = 20_000L
+    private const val MIN_READING_EXITS = 3
+    private const val AD_MAX_AGE_MS = 50 * 60 * 1000L
+    private var readingExits = 0
+    private var shownThisSession = false
     private var loading = false
+    private var showing = false
+    private var loadedAt = 0L
+    private var loadedAd: InterstitialAd? = null
 
-    fun maybeShow(activity: Activity) {
-        val now = System.currentTimeMillis()
-        if (!AdMobHelper.adsReady.value || shownThisSession || loading) return
-        if (now - lastShownMs < MIN_GAP_MS) return
+    fun preload(context: Context) {
+        if (!AdMobHelper.adsReady.value || shownThisSession || loading || showing) return
+        if (freshAd() != null) return
+
         loading = true
-        AdMobHelper.loadInterstitial(activity) { ad ->
+        AdMobHelper.loadInterstitial(context) { ad ->
             loading = false
-            if (ad != null && !activity.isFinishing && !activity.isDestroyed) {
+            loadedAd = ad
+            loadedAt = SystemClock.elapsedRealtime()
+        }
+    }
+
+    fun onReadingExit(activity: Activity, openedAt: Long, onExit: () -> Unit) {
+        if (showing) return
+        val eligibleRead = SystemClock.elapsedRealtime() - openedAt >= MIN_READING_TIME_MS
+        if (eligibleRead) readingExits++
+        val ad = freshAd()
+        if (!eligibleRead || readingExits < MIN_READING_EXITS || shownThisSession ||
+            ad == null || activity.isFinishing || activity.isDestroyed
+        ) {
+            onExit()
+            return
+        }
+
+        loadedAd = null
+        showing = true
+        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdShowedFullScreenContent() {
                 shownThisSession = true
-                lastShownMs = System.currentTimeMillis()
-                ad.show(activity)
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                showing = false
+                onExit()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                showing = false
+                onExit()
             }
         }
+        ad.show(activity)
+    }
+
+    private fun freshAd(): InterstitialAd? {
+        if (SystemClock.elapsedRealtime() - loadedAt >= AD_MAX_AGE_MS) loadedAd = null
+        return loadedAd
     }
 }

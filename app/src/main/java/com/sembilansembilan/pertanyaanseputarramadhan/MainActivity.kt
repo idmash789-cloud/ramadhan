@@ -1,7 +1,10 @@
 package com.sembilansembilan.pertanyaanseputarramadhan
 
+import android.app.Activity
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,9 +23,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,6 +68,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.ZakatScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.RamadhanTheme
 import com.sembilansembilan.pertanyaanseputarramadhan.util.AdMobHelper
 import com.sembilansembilan.pertanyaanseputarramadhan.util.ConsentManager
+import com.sembilansembilan.pertanyaanseputarramadhan.util.InterstitialGate
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -201,7 +208,7 @@ fun AppNav(
                 NuOnlineDetailScreen(
                     articleId = articleId,
                     settingsVm = settingsVm,
-                    onBack = { navController.popBackStack() }
+                    onBack = readingBackAction { navController.popBackStack() }
                 )
             }
             composable("piss") { PissKtbScreen(pissVm, settingsVm) }
@@ -219,7 +226,7 @@ fun AppNav(
                 KultumDetailScreen(
                     night = night,
                     settingsVm = settingsVm,
-                    onBack = { navController.popBackStack() }
+                    onBack = readingBackAction { navController.popBackStack() }
                 )
             }
             composable("bukusaku") {
@@ -236,7 +243,7 @@ fun AppNav(
                 BukuSakuDetailScreen(
                     sectionId = sectionId,
                     settingsVm = settingsVm,
-                    onBack = { navController.popBackStack() }
+                    onBack = readingBackAction { navController.popBackStack() }
                 )
             }
             composable("bookmarks") {
@@ -260,4 +267,23 @@ fun AppNav(
             composable("settings") { SettingsScreen(settingsVm) }
         }
     }
+}
+
+@Composable
+private fun readingBackAction(onExit: () -> Unit): () -> Unit {
+    val activity = LocalContext.current as? Activity
+    val openedAt = remember { SystemClock.elapsedRealtime() }
+    val adsReady by AdMobHelper.adsReady.collectAsState()
+    LaunchedEffect(activity, adsReady) {
+        if (activity != null && adsReady) InterstitialGate.preload(activity.applicationContext)
+    }
+    val close = {
+        if (activity == null) {
+            onExit()
+        } else {
+            InterstitialGate.onReadingExit(activity, openedAt, onExit)
+        }
+    }
+    BackHandler(onBack = close)
+    return close
 }
