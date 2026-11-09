@@ -59,14 +59,11 @@ class ZakatViewModel(private val settingsStore: SettingsStore) : ViewModel() {
 
     /** Ringkasan hasil yang dihitung ulang dari setiap perubahan input/harga. */
     val summary: StateFlow<ZakatCalculator.ZakatSummary> = combine(
-        _membersText,
-        _ricePriceText,
-        _wealthText,
-        _goldPriceText,
-        _fidyahDaysText,
-        _mealPriceText,
+        combine(_membersText, _ricePriceText, ::Pair),
+        combine(_wealthText, _goldPriceText, ::Pair),
+        combine(_fidyahDaysText, _mealPriceText, ::Pair),
         settings
-    ) { members, ricePrice, wealth, goldPrice, days, mealPrice, appSettings ->
+    ) { (members, ricePrice), (wealth, goldPrice), (days, mealPrice), appSettings ->
         // Bila kolom harga dikosongkan pengguna, pakai harga tersimpan sebagai fallback.
         val effectiveRicePrice = ZakatCalculator.parseAmount(ricePrice)
             .takeIf { it > 0 } ?: appSettings.ricePricePerKg
