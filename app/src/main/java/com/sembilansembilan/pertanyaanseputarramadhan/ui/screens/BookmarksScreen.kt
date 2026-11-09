@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Card
@@ -30,6 +29,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.data.ramadhanQuestions
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.SectionTitle
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.itemsWithNativeAds
 
 @Composable
 fun BookmarksScreen(
@@ -71,11 +71,12 @@ fun BookmarksScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        var precedingItems = 0
         if (bookmarkedQuestions.isNotEmpty()) {
             item {
                 SectionTitle("Pertanyaan")
             }
-            items(bookmarkedQuestions, key = { "q:${it.id}" }) { question ->
+            itemsWithNativeAds(bookmarkedQuestions, every = 5, precedingItems = precedingItems, key = { "q:${it.id}" }) { question ->
                 Card(
                     onClick = { onOpenQuestion(question.id) },
                     modifier = Modifier.fillMaxWidth()
@@ -108,13 +109,14 @@ fun BookmarksScreen(
                     }
                 }
             }
+            precedingItems += bookmarkedQuestions.size
         }
 
         if (bookmarkedSections.isNotEmpty()) {
             item {
                 SectionTitle("Buku Saku")
             }
-            items(bookmarkedSections, key = { "s:${it.id}" }) { section ->
+            itemsWithNativeAds(bookmarkedSections, every = 5, precedingItems = precedingItems, key = { "s:${it.id}" }) { section ->
                 Card(
                     onClick = { onOpenSection(section.id) },
                     modifier = Modifier.fillMaxWidth()
@@ -139,13 +141,14 @@ fun BookmarksScreen(
                     }
                 }
             }
+            precedingItems += bookmarkedSections.size
         }
 
         if (bookmarkedArticles.isNotEmpty()) {
             item {
                 SectionTitle("Kajian Tambahan")
             }
-            items(bookmarkedArticles, key = { "n:${it.id}" }) { article ->
+            itemsWithNativeAds(bookmarkedArticles, every = 5, precedingItems = precedingItems, key = { "n:${it.id}" }) { article ->
                 Card(
                     onClick = { onOpenArticle(article.id) },
                     modifier = Modifier.fillMaxWidth()
@@ -170,13 +173,14 @@ fun BookmarksScreen(
                     }
                 }
             }
+            precedingItems += bookmarkedArticles.size
         }
 
         if (bookmarkedPiss.isNotEmpty()) {
             item {
                 SectionTitle("Tanya Jawab Tambahan")
             }
-            items(bookmarkedPiss, key = { "p:${it.id}" }) { question ->
+            itemsWithNativeAds(bookmarkedPiss, every = 5, precedingItems = precedingItems, key = { "p:${it.id}" }) { question ->
                 Card(
                     onClick = { onOpenPiss(question.id) },
                     modifier = Modifier.fillMaxWidth()
@@ -209,13 +213,14 @@ fun BookmarksScreen(
                     }
                 }
             }
+            precedingItems += bookmarkedPiss.size
         }
 
         if (bookmarkedKultums.isNotEmpty()) {
             item {
                 SectionTitle("Kultum Ramadhan")
             }
-            items(bookmarkedKultums, key = { "k:${it.night}" }) { kultum ->
+            itemsWithNativeAds(bookmarkedKultums, every = 5, precedingItems = precedingItems, key = { "k:${it.night}" }) { kultum ->
                 Card(
                     onClick = { onOpenKultum(kultum.night) },
                     modifier = Modifier.fillMaxWidth()

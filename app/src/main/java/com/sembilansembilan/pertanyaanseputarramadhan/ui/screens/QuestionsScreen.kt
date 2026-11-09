@@ -130,7 +130,7 @@ fun QuestionsScreen(
                     vertical = 8.dp
                 )
             ) {
-                itemsWithNativeAds(questions, key = { it.id }) { question ->
+                itemsWithNativeAds(questions, every = 3, key = { it.id }) { question ->
                     QuestionCard(
                         question = question,
                         expanded = expandedId == question.id,

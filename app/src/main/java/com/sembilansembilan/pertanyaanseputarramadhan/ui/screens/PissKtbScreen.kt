@@ -137,7 +137,7 @@ fun PissKtbScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                itemsWithNativeAds(questions, key = { it.id }) { question ->
+                itemsWithNativeAds(questions, every = 3, key = { it.id }) { question ->
                     PissQuestionCard(
                         question = question,
                         expanded = expandedId == question.id,

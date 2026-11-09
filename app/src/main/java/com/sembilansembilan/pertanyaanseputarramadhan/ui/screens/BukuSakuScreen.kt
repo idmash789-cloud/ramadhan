@@ -37,7 +37,7 @@ fun BukuSakuScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        itemsWithNativeAds(bukuSakuSections, key = { it.id }) { section ->
+        itemsWithNativeAds(bukuSakuSections, every = 5, key = { it.id }) { section ->
             Card(
                 onClick = { onOpenSection(section.id) },
                 modifier = Modifier.fillMaxWidth()

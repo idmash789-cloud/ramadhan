@@ -43,7 +43,7 @@ fun NuOnlineScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item { Text("Kajian Tambahan", style = MaterialTheme.typography.titleMedium) }
-        itemsWithNativeAds(nuOnlineArticles, key = { it.id }) { article ->
+        itemsWithNativeAds(nuOnlineArticles, every = 5, key = { it.id }) { article ->
             Card(
                 onClick = { onOpenArticle(article.id) },
                 modifier = Modifier.fillMaxWidth()

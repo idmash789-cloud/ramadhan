@@ -186,8 +186,12 @@ membatasi proses latar belakang.
   `pub-XXXXXXXXXXXXXXXX`), lalu host file itu di root domain yang
   dideklarasikan di Play Console.
 - Banner adaptif tetap di bawah layar, terpisah dari menu di atas.
-- Native berlabel Iklan tampil setelah setiap 8 entri jika masih ada
-  konten berikutnya. Di Tadarus, jedanya 12 juz (4 baris).
+- Native di daftar muncul setelah setiap 5 entri Buku Saku dan Kajian
+  Tambahan, setiap 3 entri 99 Tanya dan Tanya Jawab Tambahan, serta setiap
+  4 entri Kultum. Detail Kultum tidak berisi native. Di Simpan, slot muncul
+  setiap 5 item lintas kategori. Layar Simpan kosong bebas iklan.
+- Kalkulator Zakat menempatkan native setelah Fitrah, Maal, dan tombol
+  Bagikan Hasil. Di Tadarus, jedanya 12 juz (4 baris).
 - Interstitial maksimal sekali per sesi. Iklan hanya dapat muncul saat
   kembali dari detail Buku Saku, Kajian Tambahan, atau Kultum setelah tiga
   kunjungan baca minimal 20 detik. Jika iklan belum siap, pengguna langsung

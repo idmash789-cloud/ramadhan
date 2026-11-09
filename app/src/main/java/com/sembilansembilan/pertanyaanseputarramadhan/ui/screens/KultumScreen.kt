@@ -42,7 +42,7 @@ fun KultumScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        itemsWithNativeAds(kultumRamadhan, key = { it.night }) { kultum ->
+        itemsWithNativeAds(kultumRamadhan, every = 4, key = { it.night }) { kultum ->
             Card(
                 onClick = { onOpenKultum(kultum.night) },
                 modifier = Modifier.fillMaxWidth()

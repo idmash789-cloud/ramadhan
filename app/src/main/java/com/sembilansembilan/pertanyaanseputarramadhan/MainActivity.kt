@@ -186,7 +186,12 @@ fun AppNav(
                 }
             }
         },
-        bottomBar = { AdBanner() }
+        bottomBar = {
+            val settings by settingsVm.settings.collectAsState()
+            if (currentRoute != "bookmarks" || settings.bookmarks.isNotEmpty()) {
+                AdBanner()
+            }
+        }
     ) { padding ->
         NavHost(
             navController = navController,

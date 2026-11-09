@@ -5,12 +5,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,7 +29,6 @@ import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
@@ -40,18 +41,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.HijriCalendar
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.HomeViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.RamadhanHero
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.SectionTitle
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.Champagne
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvorySurfaceLight
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatHitungMundur
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatJam
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatTanggalIndonesia
@@ -79,39 +79,27 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        RamadhanHero {
-            Text(
-                "PANDUAN RAMADHAN",
-                style = MaterialTheme.typography.labelMedium,
-                letterSpacing = 1.5.sp,
-                color = Champagne
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                "99 Pertanyaan Seputar Ramadhan",
-                style = MaterialTheme.typography.titleLarge,
-                fontFamily = FontFamily.Serif,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.height(10.dp))
-            Text(formatTanggalIndonesia(state.date), style = MaterialTheme.typography.bodyMedium)
-            val hijri = HijriCalendar.formatHijri(HijriCalendar.gregorianToHijri(state.date))
-            Text(
-                "$hijri (perkiraan)",
-                style = MaterialTheme.typography.bodySmall,
-                color = IvorySurfaceLight.copy(alpha = 0.86f)
-            )
-            Spacer(Modifier.height(14.dp))
-            HorizontalDivider(color = IvorySurfaceLight.copy(alpha = 0.24f))
-            Spacer(Modifier.height(14.dp))
-            Text("Menuju ${state.nextEventLabel}", style = MaterialTheme.typography.labelLarge, color = Champagne)
-            Text(
-                formatHitungMundur(state.countdownMinutes),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            state.nextEventTime?.let { target ->
-                Text("Pukul ${formatJam(target)}", style = MaterialTheme.typography.bodySmall)
+        val summaryMaxHeight = LocalConfiguration.current.screenHeightDp.dp / 4
+        RamadhanHero(
+            modifier = Modifier.heightIn(max = summaryMaxHeight),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    "99 Pertanyaan Seputar Ramadhan",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontFamily = FontFamily.Serif,
+                    fontWeight = FontWeight.SemiBold
+                )
+                val eventTime = state.nextEventTime?.let { " · ${formatJam(it)}" }.orEmpty()
+                Text(
+                    "Menuju ${state.nextEventLabel}: ${formatHitungMundur(state.countdownMinutes)}$eventTime",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Champagne
+                )
             }
         }
 
@@ -120,8 +108,12 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         ) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                SectionTitle("Jadwal Hari Ini")
+            Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    "Jadwal Hari Ini",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -133,6 +125,12 @@ fun HomeScreen(
                     )
                     Text(state.city.name, style = MaterialTheme.typography.bodySmall)
                 }
+                val hijri = HijriCalendar.formatHijri(HijriCalendar.gregorianToHijri(state.date))
+                Text(
+                    "${formatTanggalIndonesia(state.date)} · $hijri (perkiraan)",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 val times = state.times
                 if (times == null) {
                     Text("Memuat…", style = MaterialTheme.typography.bodyMedium)
@@ -238,9 +236,11 @@ private fun JadwalTile(label: String, time: LocalTime, modifier: Modifier = Modi
         contentColor = if (featured) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
         shape = MaterialTheme.shapes.small
     ) {
-        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-            Text(label, style = MaterialTheme.typography.labelMedium)
-            Text(formatJam(time), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        }
+        Text(
+            text = "$label: ${formatJam(time)}",
+            modifier = Modifier.padding(horizontal = 9.dp, vertical = 6.dp),
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = if (featured) FontWeight.SemiBold else FontWeight.Normal
+        )
     }
 }

@@ -35,14 +35,17 @@ import kotlin.math.roundToInt
 
 fun <T> LazyListScope.itemsWithNativeAds(
     entries: List<T>,
+    every: Int,
     key: (T) -> Any,
+    precedingItems: Int = 0,
     content: @Composable (T) -> Unit,
 ) {
     entries.forEachIndexed { index, entry ->
-        if (index > 0 && index % 8 == 0) {
-            item(key = "native:${key(entry)}", contentType = "native") { AdNativeCard() }
+        val entryKey = key(entry)
+        item(key = entryKey) { content(entry) }
+        if ((precedingItems + index + 1) % every == 0) {
+            item(key = "native:$entryKey", contentType = "native") { AdNativeCard() }
         }
-        item(key = key(entry)) { content(entry) }
     }
 }
 
