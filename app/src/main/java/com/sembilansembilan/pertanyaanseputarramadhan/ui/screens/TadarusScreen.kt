@@ -1,5 +1,10 @@
 package com.sembilansembilan.pertanyaanseputarramadhan.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,9 +46,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.JUZ_LIST
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.JuzInfo
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.TadarusUiState
@@ -65,6 +72,12 @@ import java.util.Locale
 fun TadarusScreen(tadarusVm: TadarusViewModel) {
     val state by tadarusVm.uiState.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val notificationPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) tadarusVm.setReminderEnabled(true)
+    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -86,7 +99,18 @@ fun TadarusScreen(tadarusVm: TadarusViewModel) {
         item(span = { GridItemSpan(3) }) {
             ReminderCard(
                 checked = state.reminderEnabled,
-                onCheckedChange = { tadarusVm.setReminderEnabled(it) }
+                onCheckedChange = { enabled ->
+                    val needsPermission = enabled &&
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                        ContextCompat.checkSelfPermission(
+                            context, Manifest.permission.POST_NOTIFICATIONS
+                        ) != PackageManager.PERMISSION_GRANTED
+                    if (needsPermission) {
+                        notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        tadarusVm.setReminderEnabled(enabled)
+                    }
+                }
             )
         }
         item(span = { GridItemSpan(3) }) {
@@ -314,7 +338,7 @@ private fun ReminderCard(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "Pengingat baca tadarus setiap hari (penjadwalan menyusul).",
+                    text = "Notifikasi tadarus setiap hari, sekitar pukul 19.00 waktu perangkat.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

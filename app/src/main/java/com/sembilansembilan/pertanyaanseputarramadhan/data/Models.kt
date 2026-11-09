@@ -120,8 +120,7 @@ data class AppSettings(
      */
     val tadarusTargetDate: String = "",
     /**
-     * Toggle pengingat harian tadarus (QW-5). HANYA menyimpan pilihan
-     * pengguna — penjadwalan WorkManager adalah langkah lanjutan.
+     * Pilihan pengingat harian tadarus (QW-5).
      * Key DataStore "tadarus_reminder_enabled".
      */
     val tadarusReminderEnabled: Boolean = false,

@@ -94,9 +94,8 @@ data class TadarusUiState(
  * kecepatan yang dibutuhkan, dan toggle pengingat harian.
  *
  * Progress tersimpan di DataStore lewat SettingsStore (key tadarus_*,
- * lihat spec QW-5). Toggle pengingat HANYA menyimpan pilihan pengguna;
- * penjadwalan WorkManager-nya adalah langkah lanjutan (lihat spec QW-5 §5)
- * — tidak ada worker setengah jadi di sini.
+ * lihat spec QW-5). Pilihan pengingat dipantau oleh MainActivity
+ * untuk menjadwalkan atau membatalkan notifikasi.
  */
 class TadarusViewModel(private val settingsStore: SettingsStore) : ViewModel() {
 
@@ -142,7 +141,7 @@ class TadarusViewModel(private val settingsStore: SettingsStore) : ViewModel() {
         viewModelScope.launch { settingsStore.setTadarusTargetDate(null) }
     }
 
-    /** Toggle pengingat harian (hanya tersimpan; penjadwalan menyusul). */
+    /** Simpan pilihan pengingat harian. */
     fun setReminderEnabled(enabled: Boolean) {
         viewModelScope.launch { settingsStore.setTadarusReminderEnabled(enabled) }
     }

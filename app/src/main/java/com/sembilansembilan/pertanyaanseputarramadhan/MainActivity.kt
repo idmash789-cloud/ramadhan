@@ -32,6 +32,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.data.DarkMode
 import com.sembilansembilan.pertanyaanseputarramadhan.data.SettingsStore
 import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.ReminderScheduler
 import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.SunnahReminderScheduler
+import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.TadarusReminderWorker
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.HomeViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.PissKtbViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.QuestionsViewModel
@@ -56,6 +57,9 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.ZakatScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.RamadhanTheme
 import com.sembilansembilan.pertanyaanseputarramadhan.util.AdMobHelper
 import com.sembilansembilan.pertanyaanseputarramadhan.util.ConsentManager
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -77,6 +81,14 @@ class MainActivity : ComponentActivity() {
             if (settings.sunnahRemindersEnabled) {
                 SunnahReminderScheduler.schedule(applicationContext)
             }
+        }
+        lifecycleScope.launch {
+            settingsStore.settings
+                .map { it.tadarusReminderEnabled }
+                .distinctUntilChanged()
+                .collect { enabled ->
+                    TadarusReminderWorker.updateSchedule(applicationContext, enabled)
+                }
         }
         setContent {
             val settingsVm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(settingsStore))

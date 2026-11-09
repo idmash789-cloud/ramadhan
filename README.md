@@ -96,9 +96,9 @@ Semua konten tersimpan lokal, tanpa akun, tanpa server.
   (DatePicker) dengan hitungan "X juz/hari agar khatam tepat waktu" dan
   perkiraan tanggal selesai bila membaca 1 juz/hari. Progress tersimpan
   di DataStore (key `tadarus_completed`, `tadarus_target_date`,
-  `tadarus_reminder_enabled`). Toggle pengingat harian saat ini HANYA
-  menyimpan pilihan — penjadwalan notifikasi hariannya adalah langkah
-  lanjutan (belum ada worker).
+  `tadarus_reminder_enabled`). Pengingat dapat diaktifkan dari layar Tadarus
+  dan mulai dijadwalkan sekitar pukul 19.00 waktu perangkat. Android dapat
+  menunda pengiriman saat membatasi proses latar belakang.
 - **Pengaturan:** mode gelap (Terang/Gelap/Sistem), pilih kota (~35 kota
   Indonesia), pengingat sahur/berbuka, pengingat puasa sunnah, Tentang +
   disclaimer + tautan Play Store + bagikan aplikasi.
@@ -235,6 +235,4 @@ membatasi proses latar belakang.
 - Tanggal Hijriah di aplikasi adalah perkiraan algoritma Kuwaiti — bisa
   selisih ±1 hari dari penetapan resmi pemerintah; semua tampilan Hijriah
   berlabel "(perkiraan)".
-- Toggle pengingat harian Tadarus hanya menyimpan pilihan — penjadwalan
-  notifikasi hariannya belum dibuat (langkah lanjutan).
 - Fase 2 (belum ada): kuis Ramadhan.
