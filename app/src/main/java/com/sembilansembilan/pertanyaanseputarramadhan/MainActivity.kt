@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -68,9 +69,9 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.SunnahScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.TadarusScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.ZakatScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvorySurfaceLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineContainerLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOnContainerLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PinePrimaryLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightContainerLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightOnContainerLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightPrimaryLight
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.RamadhanTheme
 import com.sembilansembilan.pertanyaanseputarramadhan.util.AdMobHelper
 import com.sembilansembilan.pertanyaanseputarramadhan.util.ConsentManager
@@ -155,12 +156,12 @@ fun AppNav(
     Scaffold(
         topBar = {
             NavigationBar(
-                containerColor = PinePrimaryLight,
+                containerColor = MidnightPrimaryLight,
                 windowInsets = WindowInsets.statusBars.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
             ) {
                 for (tab in tabs) {
                     NavigationBarItem(
-                        selected = currentRoute == tab.route,
+                        selected = currentRoute.substringBefore('/') == tab.route,
                         onClick = {
                             if (tab.route == "home") {
                                 navController.popBackStack("home", inclusive = false)
@@ -173,11 +174,11 @@ fun AppNav(
                             }
                         },
                         icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
+                        label = { Text(tab.label, style = MaterialTheme.typography.labelMedium) },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = PineOnContainerLight,
+                            selectedIconColor = MidnightOnContainerLight,
                             selectedTextColor = IvorySurfaceLight,
-                            indicatorColor = PineContainerLight,
+                            indicatorColor = MidnightContainerLight,
                             unselectedIconColor = IvorySurfaceLight,
                             unselectedTextColor = IvorySurfaceLight,
                         )

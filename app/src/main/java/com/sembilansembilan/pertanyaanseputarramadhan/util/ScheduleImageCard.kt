@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.compose.ui.graphics.toArgb
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvoryBackgroundLight
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvorySurfaceLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PinePrimaryLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineAccentLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOnSurfaceLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOnSurfaceVariantLight
-import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOutlineVariantLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightPrimaryLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightAccentLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightOnSurfaceLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightOnSurfaceVariantLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.MidnightOutlineVariantLight
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -29,7 +29,7 @@ import java.io.FileOutputStream
  * dirender MANUAL menjadi bitmap (android.graphics Bitmap + Canvas + Paint),
  * BUKAN screenshot layar, lalu dibagikan lewat Intent + FileProvider.
  *
- * Kartu selalu memakai palet TERANG tema coklat/krem (bukan mode gelap)
+ * Kartu selalu memakai palet TERANG biru malam dan ivory
  * agar tetap terbaca saat dibagikan ke WhatsApp / Status / media sosial.
  * Warna disalin dari ui/theme/Color.kt (varian terang).
  *
@@ -45,14 +45,14 @@ object ScheduleImageCard {
     private const val WIDTH = 1080
     private const val HEIGHT = 1500
 
-    // Palet terang hijau pinus dan ivory.
+    // Palet terang biru malam dan ivory.
     private val COLOR_BG = IvoryBackgroundLight.toArgb()
     private val COLOR_CARD = IvorySurfaceLight.toArgb()
-    private val COLOR_PRIMARY = PinePrimaryLight.toArgb()
-    private val COLOR_ACCENT = PineAccentLight.toArgb()
-    private val COLOR_TEXT = PineOnSurfaceLight.toArgb()
-    private val COLOR_VARIANT = PineOnSurfaceVariantLight.toArgb()
-    private val COLOR_DIVIDER = PineOutlineVariantLight.toArgb()
+    private val COLOR_PRIMARY = MidnightPrimaryLight.toArgb()
+    private val COLOR_ACCENT = MidnightAccentLight.toArgb()
+    private val COLOR_TEXT = MidnightOnSurfaceLight.toArgb()
+    private val COLOR_VARIANT = MidnightOnSurfaceVariantLight.toArgb()
+    private val COLOR_DIVIDER = MidnightOutlineVariantLight.toArgb()
 
     /**
      * Render kartu jadwal menjadi bitmap 1080×1500, simpan sebagai PNG di

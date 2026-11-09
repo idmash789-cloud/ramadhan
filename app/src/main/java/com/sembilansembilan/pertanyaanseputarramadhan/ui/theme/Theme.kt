@@ -1,69 +1,78 @@
 package com.sembilansembilan.pertanyaanseputarramadhan.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PinePrimaryDark,
-    onPrimary = PineOnPrimaryDark,
-    primaryContainer = PineContainerDark,
-    onPrimaryContainer = PineOnContainerDark,
-    secondary = PineSecondaryDark,
-    onSecondary = PineOnPrimaryDark,
-    secondaryContainer = PineSurfaceVariantDark,
-    onSecondaryContainer = PineOnSurfaceDark,
-    tertiary = PineAccentDark,
-    onTertiary = PineOnPrimaryDark,
-    tertiaryContainer = PineContainerDark,
-    onTertiaryContainer = PineOnContainerDark,
-    background = PineBackgroundDark,
-    onBackground = PineOnSurfaceDark,
-    surface = PineSurfaceDark,
-    surfaceVariant = PineSurfaceVariantDark,
-    surfaceContainer = PineSurfaceDark,
-    surfaceContainerHigh = PineSurfaceVariantDark,
-    surfaceContainerHighest = PineSurfaceVariantDark,
-    surfaceContainerLow = PineSurfaceDark,
-    onSurface = PineOnSurfaceDark,
-    onSurfaceVariant = PineOnSurfaceVariantDark,
-    outline = PineOutlineDark,
-    outlineVariant = PineSurfaceVariantDark,
+    primary = MidnightPrimaryDark,
+    onPrimary = MidnightOnPrimaryDark,
+    primaryContainer = MidnightContainerDark,
+    onPrimaryContainer = MidnightOnContainerDark,
+    secondary = MidnightSecondaryDark,
+    onSecondary = MidnightOnPrimaryDark,
+    secondaryContainer = MidnightSurfaceVariantDark,
+    onSecondaryContainer = MidnightOnSurfaceDark,
+    tertiary = MidnightAccentDark,
+    onTertiary = MidnightOnPrimaryDark,
+    tertiaryContainer = MidnightContainerDark,
+    onTertiaryContainer = MidnightOnContainerDark,
+    background = MidnightBackgroundDark,
+    onBackground = MidnightOnSurfaceDark,
+    surface = MidnightSurfaceDark,
+    surfaceVariant = MidnightSurfaceVariantDark,
+    surfaceContainer = MidnightSurfaceDark,
+    surfaceContainerHigh = MidnightSurfaceVariantDark,
+    surfaceContainerHighest = MidnightSurfaceVariantDark,
+    surfaceContainerLow = MidnightSurfaceDark,
+    onSurface = MidnightOnSurfaceDark,
+    onSurfaceVariant = MidnightOnSurfaceVariantDark,
+    outline = MidnightOutlineDark,
+    outlineVariant = MidnightSurfaceVariantDark,
     inverseSurface = IvorySurfaceLight,
-    inverseOnSurface = PineOnSurfaceLight,
-    inversePrimary = PinePrimaryLight,
+    inverseOnSurface = MidnightOnSurfaceLight,
+    inversePrimary = MidnightPrimaryLight,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PinePrimaryLight,
+    primary = MidnightPrimaryLight,
     onPrimary = IvorySurfaceLight,
-    primaryContainer = PineContainerLight,
-    onPrimaryContainer = PineOnContainerLight,
-    secondary = PineSecondaryLight,
+    primaryContainer = MidnightContainerLight,
+    onPrimaryContainer = MidnightOnContainerLight,
+    secondary = MidnightSecondaryLight,
     onSecondary = IvorySurfaceLight,
-    secondaryContainer = PineContainerLight,
-    onSecondaryContainer = PineOnContainerLight,
-    tertiary = PineAccentLight,
+    secondaryContainer = MidnightContainerLight,
+    onSecondaryContainer = MidnightOnContainerLight,
+    tertiary = MidnightAccentLight,
     onTertiary = IvorySurfaceLight,
-    tertiaryContainer = PineContainerLight,
-    onTertiaryContainer = PineOnContainerLight,
+    tertiaryContainer = MidnightContainerLight,
+    onTertiaryContainer = MidnightOnContainerLight,
     background = IvoryBackgroundLight,
-    onBackground = PineOnSurfaceLight,
+    onBackground = MidnightOnSurfaceLight,
     surface = IvorySurfaceLight,
     surfaceVariant = IvorySurfaceVariantLight,
     surfaceContainer = IvorySurfaceLight,
     surfaceContainerHigh = IvorySurfaceLight,
     surfaceContainerHighest = IvorySurfaceLight,
     surfaceContainerLow = IvorySurfaceLight,
-    onSurface = PineOnSurfaceLight,
-    onSurfaceVariant = PineOnSurfaceVariantLight,
-    outline = PineOutlineLight,
-    outlineVariant = PineOutlineVariantLight,
-    inverseSurface = PineSurfaceDark,
-    inverseOnSurface = PineOnSurfaceDark,
-    inversePrimary = PinePrimaryDark,
+    onSurface = MidnightOnSurfaceLight,
+    onSurfaceVariant = MidnightOnSurfaceVariantLight,
+    outline = MidnightOutlineLight,
+    outlineVariant = MidnightOutlineVariantLight,
+    inverseSurface = MidnightSurfaceDark,
+    inverseOnSurface = MidnightOnSurfaceDark,
+    inversePrimary = MidnightPrimaryDark,
+)
+
+private val RamadhanShapes = Shapes(
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(18.dp),
+    large = RoundedCornerShape(24.dp),
 )
 
 @Composable
@@ -76,6 +85,7 @@ fun RamadhanTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = RamadhanShapes,
         content = content
     )
 }

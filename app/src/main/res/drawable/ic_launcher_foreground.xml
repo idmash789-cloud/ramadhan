@@ -1,13 +1,13 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <!-- Latar lingkaran hijau pinus -->
-    <path android:fillColor="#214E43"
+    <!-- Latar lingkaran biru malam -->
+    <path android:fillColor="#182B45"
         android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
     <!-- Bulan sabit krem -->
     <path android:fillColor="#FAF8F2"
         android:pathData="M66,20 A30,30 0,1 0,66 88 A24,24 0,1 1,66 20 Z" />
-    <!-- Bintang empat sisi hijau sage -->
-    <path android:fillColor="#B3CFBE"
+    <!-- Bintang empat sisi champagne -->
+    <path android:fillColor="#E5C995"
         android:pathData="M78,30 L81,38 L89,41 L81,44 L78,52 L75,44 L67,41 L75,38 Z" />
 </vector>

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -56,7 +58,10 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.JuzInfo
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.TadarusUiState
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.TadarusViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdNativeCard
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.RamadhanHero
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.SectionTitle
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.Champagne
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvorySurfaceLight
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatTanggalIndonesia
 import java.time.Instant
 import java.time.LocalDate
@@ -66,7 +71,7 @@ import java.util.Locale
 /**
  * QW-5 (b): layar Tadarus — grid 30 juz (ketuk untuk centang), persentase
  * khatam, target tanggal khatam + kecepatan yang dibutuhkan, dan toggle
- * pengingat harian. Tanpa iklan.
+ * pengingat harian.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -182,41 +187,30 @@ fun TadarusScreen(tadarusVm: TadarusViewModel) {
 
 @Composable
 private fun ProgressCard(state: TadarusUiState) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "${state.completedCount} dari 30 juz",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "${state.percent}%",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            LinearProgressIndicator(
-                progress = { state.percent / 100f },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (state.isKhatam) {
-                    "Alhamdulillah, khatam 30 juz!"
-                } else {
-                    "Sisa ${state.remainingCount} juz lagi menuju khatam."
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+    RamadhanHero {
+        Text("TADARUS 30 JUZ", style = MaterialTheme.typography.labelMedium, color = Champagne)
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = "${state.completedCount} dari 30 juz",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(Modifier.height(12.dp))
+        LinearProgressIndicator(
+            progress = { state.completedCount / 30f },
+            modifier = Modifier.fillMaxWidth(),
+            color = Champagne,
+            trackColor = IvorySurfaceLight.copy(alpha = 0.24f)
+        )
+        Spacer(Modifier.height(10.dp))
+        Text(
+            text = if (state.isKhatam) {
+                "Alhamdulillah, khatam 30 juz!"
+            } else {
+                "${state.percent}% selesai • Sisa ${state.remainingCount} juz"
+            },
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
@@ -360,8 +354,9 @@ private fun JuzItem(juz: JuzInfo, done: Boolean, onToggle: () -> Unit) {
         MaterialTheme.typography.titleSmall.lineHeight.toDp() +
             (MaterialTheme.typography.bodySmall.lineHeight * 3).toDp()
     }
-    Card(
+    OutlinedCard(
         onClick = onToggle,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(
             containerColor = if (done) {
                 MaterialTheme.colorScheme.primaryContainer
