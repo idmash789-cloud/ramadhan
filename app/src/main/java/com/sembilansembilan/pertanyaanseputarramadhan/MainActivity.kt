@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -65,6 +67,10 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.SettingsScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.SunnahScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.TadarusScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.ZakatScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvorySurfaceLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineContainerLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOnContainerLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PinePrimaryLight
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.RamadhanTheme
 import com.sembilansembilan.pertanyaanseputarramadhan.util.AdMobHelper
 import com.sembilansembilan.pertanyaanseputarramadhan.util.ConsentManager
@@ -77,6 +83,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
         val settingsStore = SettingsStore(applicationContext)
         // Inisialisasi iklan setelah UMP mengizinkan permintaan iklan.
         ConsentManager.requestConsent(this) {
@@ -148,6 +155,7 @@ fun AppNav(
     Scaffold(
         topBar = {
             NavigationBar(
+                containerColor = PinePrimaryLight,
                 windowInsets = WindowInsets.statusBars.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
             ) {
                 for (tab in tabs) {
@@ -165,7 +173,14 @@ fun AppNav(
                             }
                         },
                         icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) }
+                        label = { Text(tab.label) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = PineOnContainerLight,
+                            selectedTextColor = IvorySurfaceLight,
+                            indicatorColor = PineContainerLight,
+                            unselectedIconColor = IvorySurfaceLight,
+                            unselectedTextColor = IvorySurfaceLight,
+                        )
                     )
                 }
             }

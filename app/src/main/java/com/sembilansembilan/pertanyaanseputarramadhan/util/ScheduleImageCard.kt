@@ -1,6 +1,14 @@
 package com.sembilansembilan.pertanyaanseputarramadhan.util
 
 import android.content.Context
+import androidx.compose.ui.graphics.toArgb
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvoryBackgroundLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.IvorySurfaceLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PinePrimaryLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineAccentLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOnSurfaceLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOnSurfaceVariantLight
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.PineOutlineVariantLight
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -37,14 +45,14 @@ object ScheduleImageCard {
     private const val WIDTH = 1080
     private const val HEIGHT = 1500
 
-    // Palet terang (Color.kt): krem, coklat, emas.
-    private const val COLOR_BG = 0xFFF7F3EC.toInt() // CreamBackgroundLight
-    private const val COLOR_CARD = 0xFFFFFDF8.toInt() // CreamSurfaceLight
-    private const val COLOR_BROWN = 0xFF7A5A2E.toInt() // BrownPrimaryLight
-    private const val COLOR_GOLD = 0xFFC9A66B.toInt() // GoldTertiaryLight
-    private const val COLOR_TEXT = 0xFF2A2118.toInt() // BrownOnSurfaceLight
-    private const val COLOR_VARIANT = 0xFF6B5D49.toInt() // BrownOnSurfaceVariantLight
-    private const val COLOR_DIVIDER = 0xFFEFE7D8.toInt() // CreamSurfaceVariantLight
+    // Palet terang hijau pinus dan ivory.
+    private val COLOR_BG = IvoryBackgroundLight.toArgb()
+    private val COLOR_CARD = IvorySurfaceLight.toArgb()
+    private val COLOR_PRIMARY = PinePrimaryLight.toArgb()
+    private val COLOR_ACCENT = PineAccentLight.toArgb()
+    private val COLOR_TEXT = PineOnSurfaceLight.toArgb()
+    private val COLOR_VARIANT = PineOnSurfaceVariantLight.toArgb()
+    private val COLOR_DIVIDER = PineOutlineVariantLight.toArgb()
 
     /**
      * Render kartu jadwal menjadi bitmap 1080×1500, simpan sebagai PNG di
@@ -93,7 +101,7 @@ object ScheduleImageCard {
         canvas.drawColor(COLOR_BG)
         val cardPaint = paint(COLOR_CARD)
         canvas.drawRoundRect(RectF(48f, 48f, 1032f, 1452f), 48f, 48f, cardPaint)
-        val borderPaint = paint(COLOR_GOLD).apply {
+        val borderPaint = paint(COLOR_ACCENT).apply {
             style = Paint.Style.STROKE
             strokeWidth = 4f
         }
@@ -106,7 +114,7 @@ object ScheduleImageCard {
             "JADWAL IMSAKIYAH",
             centerX,
             180f,
-            paint(COLOR_BROWN, 58f, bold = true)
+            paint(COLOR_PRIMARY, 58f, bold = true)
         )
         // Tanggal Masehi + Hijriah (perkiraan) + kota.
         canvas.drawText(
@@ -129,20 +137,20 @@ object ScheduleImageCard {
         )
 
         // Garis pemisah emas.
-        val dividerPaint = paint(COLOR_GOLD).apply { strokeWidth = 4f }
+        val dividerPaint = paint(COLOR_ACCENT).apply { strokeWidth = 4f }
         canvas.drawLine(140f, 400f, 940f, 400f, dividerPaint)
 
         // Pil hitung mundur ke event berikutnya.
         val countdownText =
             "Menuju ${state.nextEventLabel} \u2022 ${formatHitungMundur(state.countdownMinutes)}"
-        val countdownPaint = paint(COLOR_BROWN, 36f, bold = true)
+        val countdownPaint = paint(COLOR_PRIMARY, 36f, bold = true)
         val pillWidth = countdownPaint.measureText(countdownText) + 80f
         val pillLeft = centerX - pillWidth / 2f
         canvas.drawRoundRect(
             RectF(pillLeft, 440f, pillLeft + pillWidth, 524f),
             42f,
             42f,
-            paint(COLOR_GOLD)
+            paint(COLOR_ACCENT)
         )
         canvas.drawText(countdownText, centerX, 496f, countdownPaint)
 
@@ -159,7 +167,7 @@ object ScheduleImageCard {
         var rowTop = 580f
         val rowHeight = 96f
         val labelPaint = paint(COLOR_TEXT, 40f, align = Paint.Align.LEFT)
-        val timePaint = paint(COLOR_BROWN, 40f, bold = true, align = Paint.Align.RIGHT)
+        val timePaint = paint(COLOR_PRIMARY, 40f, bold = true, align = Paint.Align.RIGHT)
         val rowDividerPaint = paint(COLOR_DIVIDER).apply { strokeWidth = 2f }
         for ((index, row) in rows.withIndex()) {
             val baseline = rowTop + 62f
@@ -176,7 +184,7 @@ object ScheduleImageCard {
             "99 Pertanyaan Seputar Ramadhan",
             centerX,
             1310f,
-            paint(COLOR_BROWN, 34f, bold = true)
+            paint(COLOR_PRIMARY, 34f, bold = true)
         )
         canvas.drawText(
             "Jadwal perkiraan \u2014 cocokkan dengan jadwal resmi Kemenag",
