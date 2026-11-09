@@ -1,0 +1,104 @@
+# 99 Pertanyaan Seputar Ramadhan — Aplikasi Android
+
+Aplikasi Android native (Kotlin + Jetpack Compose, Material 3) berisi panduan
+ibadah puasa Ramadhan: **99 tanya-jawab fikih puasa dengan referensi kitab
+klasik** (Tuhfatul Muhtaj, I'anah ath-Thalibin, Sullam at-Taufiq, dan
+kitab-kitab mu'tabar lainnya) + **Buku Saku 10 seksi** + **jadwal imsakiyah
++ pengingat sahur/berbuka + hitung mundur**. Semua konten tersimpan lokal,
+tanpa akun, tanpa server.
+
+> **Ini adalah rebuild dari nol.** Aplikasi web sebelumnya (repo
+> `annas12/ramadhan`, situs live `ramadhan.drama.my.id`) tetap jalan dan
+> tidak diubah. Aplikasi Android ini adalah penggantinya di Play Store
+> (package sama, versi 3.0.0).
+
+- **Stack:** Kotlin + Jetpack Compose (Material 3), MVVM + StateFlow,
+  DataStore (pengaturan/bookmark/kota), WorkManager (pengingat), AdMob
+- **Package:** `com.sembilansembilan.pertanyaanseputarramadhan`
+  · minSdk 26 · **target/compile SDK 36 (Android 16)**
+- **Version:** 3.0.0 (versionCode 3)
+
+## Cara build
+
+1. Clone repo ini, lalu buka di **Android Studio** (Ladybug atau lebih baru).
+2. Tunggu **Gradle sync** selesai (butuh koneksi internet untuk unduh
+   dependensi pertama kali).
+3. Pilih perangkat/emulator, lalu **Run ▶** (atau Shift+F10).
+4. Untuk AAB rilis: **Build → Generate Signed App Bundle / APK**,
+   pilih `release` (R8 + shrinkResources aktif).
+
+Tidak ada `gradlew` di repo ini (sama seperti Shift & Pay Tracker) —
+Android Studio memakai distribusi Gradle-nya sendiri.
+
+## Isi aplikasi
+
+- **Beranda:** jadwal imsakiyah hari ini (kota pilihan), hitung mundur ke
+  Imsak / Berbuka, kartu menu, catatan "Panduan fikih umum, bukan fatwa
+  personal."
+- **99 Pertanyaan:** pencarian (judul + pertanyaan + jawaban), jawaban
+  expandable, bookmark, bagikan/salin jawaban.
+- **Buku Saku:** 10 seksi panduan puasa; isi dirender lengkap termasuk
+  **tabel** dan **bold inline** (dua bug tampilan versi web sudah diperbaiki
+  di sini) serta baris Arab (RTL).
+- **Bookmark:** pertanyaan & seksi Buku Saku yang disimpan.
+- **Pengaturan:** mode gelap (Terang/Gelap/Sistem), pilih kota (~35 kota
+  Indonesia), pengingat sahur/berbuka, Tentang + disclaimer + tautan
+  Play Store + bagikan aplikasi.
+
+## Verifikasi konten
+
+Konten dikonversi utuh dari data web (`ramadhanQuestions.ts` dan
+`bukuSakuContent.ts`): **99 pertanyaan (id 1–99, semua dengan referensi
+kitab)** dan **10 seksi Buku Saku**. Semua paragraf dipertahankan — tidak
+ada yang diringkas. Periksa dengan mencari string di
+`data/QuestionsData.kt` dan `data/BukuSakuData.kt`.
+
+## Jadwal imsakiyah — PENTING sebelum rilis
+
+Waktu sholat dihitung di dalam aplikasi (algoritma posisi matahari gaya
+PrayTimes) dengan parameter **Kemenag/MABIMS**: Subuh 20°, Isya 18°,
+Maghrib = terbenam matahari, Ashar Syafi'i (faktor 1), Imsak = Subuh − 10
+menit, ihtiyat +2 menit untuk Subuh/Dzuhur/Ashar/Maghrib/Isya.
+**Waktu hasil hitungan WAJIB dicocokkan dengan jadwal resmi Kemenag
+(Jakarta) sebelum rilis** — lihat `imsakiyah/PrayerTimes.kt`.
+
+Pengingat sahur (30 menit sebelum Imsak) dan berbuka (saat Maghrib)
+dijadwalkan via WorkManager (best-effort). Untuk keandalan penuh,
+pengguna perlu mengizinkan alarm tepat waktu (izin exact-alarm) — aplikasi
+akan tetap berfungsi tanpa itu, hanya pengingat bisa terlambat.
+
+## Iklan (AdMob)
+
+- Semua ID iklan di kode ini adalah **TEST ID resmi Google** — jangan
+  rilis ke Play Store dengan ID ini.
+- Sebelum rilis: ganti dengan production App ID + Ad Unit ID di
+  `AndroidManifest.xml` dan `util/AdMobHelper.kt`, isi
+  `docs/app-ads.txt` dengan publisher ID asli (ganti
+  `pub-XXXXXXXXXXXXXXXX`), lalu host file itu di root domain yang
+  dideklarasikan di Play Console.
+- Penempatan sopan: banner adaptive di bawah konten (Beranda + daftar
+  Pertanyaan); interstitial **maks 1x per sesi DAN jeda ≥ 3 menit**,
+  hanya setelah aksi selesai (mis. setelah membagikan jawaban).
+- UMP Consent SDK aktif: formulir persetujuan Google tampil saat
+  pertama dibuka bila diwajibkan.
+
+## Sebelum rilis — checklist
+
+- [ ] Cocokkan jadwal imsakiyah dengan jadwal resmi Kemenag (Jakarta).
+- [ ] Cek `versionCode` saat ini di Play Console — naikkan bila angka di
+      sana sudah >= 3 (versi Play Store saat ini 2.0).
+- [ ] Ganti semua TEST ID AdMob dengan production ID + isi `app-ads.txt`.
+- [ ] Uji di HP Android sungguhan: buka-tutup layar, pencarian, bookmark,
+      mode gelap, pengingat, dan tampilkan iklan (harus iklan test).
+- [ ] Isi Data Safety di Play Console (lihat `PRIVACY_POLICY.md`).
+
+## Keterbatasan yang diketahui
+
+- Build ini **belum pernah dicompile** di mesin pembuatnya (tidak ada
+  JDK/Android SDK) — compile pertama dilakukan di Android Studio.
+- Jadwal imsakiyah adalah hasil hitungan lokal, bukan jadwal resmi
+  Kemenag (lihat catatan di atas).
+- Pengingat via WorkManager bersifat best-effort (bisa tertunda bila
+  sistem membatasi background work / tanpa izin exact-alarm).
+- Fase 2 (belum ada): kalkulator zakat fitrah, tadarus/khatam tracker,
+  kuis Ramadhan.
