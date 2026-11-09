@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -90,6 +91,7 @@ private class NativeCardView(context: Context) : FrameLayout(context) {
         textSize = 16f
         setTypeface(null, Typeface.BOLD)
     }
+    private val icon = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
     private val media = MediaView(context)
     private val body = TextView(context)
     private val action = Button(context)
@@ -102,12 +104,17 @@ private class NativeCardView(context: Context) : FrameLayout(context) {
             orientation = LinearLayout.VERTICAL
             setPadding(padding, padding, padding, padding)
             addView(label)
-            addView(headline)
+            addView(LinearLayout(context).apply {
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                addView(icon, LinearLayout.LayoutParams(dp(40), dp(40)).apply { marginEnd = dp(8) })
+                addView(headline, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            })
             addView(media, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(160)))
             addView(body)
             addView(action)
         }, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         adView.headlineView = headline
+        adView.iconView = icon
         adView.mediaView = media
         adView.bodyView = body
         adView.callToActionView = action
@@ -120,6 +127,9 @@ private class NativeCardView(context: Context) : FrameLayout(context) {
         body.setTextColor(foreground)
         if (boundAd === ad) return
         headline.text = ad.headline
+        val iconDrawable = ad.icon?.drawable
+        icon.setImageDrawable(iconDrawable)
+        icon.visibility = if (iconDrawable == null) View.GONE else View.VISIBLE
         body.text = ad.body
         body.visibility = if (ad.body.isNullOrBlank()) View.GONE else View.VISIBLE
         action.text = ad.callToAction
