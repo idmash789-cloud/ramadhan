@@ -22,15 +22,11 @@ Semua konten tersimpan lokal, tanpa akun, tanpa server.
 
 ## Cara build
 
-1. Clone repo ini, lalu buka di **Android Studio** (Ladybug atau lebih baru).
-2. Tunggu **Gradle sync** selesai (butuh koneksi internet untuk unduh
-   dependensi pertama kali).
-3. Pilih perangkat/emulator, lalu **Run ▶** (atau Shift+F10).
-4. Untuk AAB rilis: **Build → Generate Signed App Bundle / APK**,
-   pilih `release` (R8 + shrinkResources aktif).
-
-Tidak ada `gradlew` di repo ini (sama seperti Shift & Pay Tracker) —
-Android Studio memakai distribusi Gradle-nya sendiri.
+1. Clone repo ini, lalu buka folder proyek di **Android Studio Meerkat Feature Drop (2024.3.2) atau versi yang lebih baru dengan dukungan AGP 8.10.1**.
+2. Pasang **Android SDK Platform 36** dan pilih **JDK 17 atau 21** sebagai Gradle JDK. Proyek menyertakan Gradle Wrapper 8.11.1.
+3. Tunggu **Gradle sync** selesai, pilih perangkat/emulator, lalu klik **Run ▶**. Sinkronisasi pertama memerlukan internet.
+4. Untuk build debug via terminal di Windows, jalankan `./gradlew.bat :app:assembleDebug` di PowerShell. APK tersedia di `app/build/outputs/apk/debug/app-debug.apk`. Di macOS/Linux, jalankan `./gradlew :app:assembleDebug`.
+5. Untuk AAB rilis, pilih **Build → Generate Signed App Bundle / APK**, lalu pilih `release` dan gunakan upload key yang terdaftar untuk aplikasi Ramadhan di Play Console. Simpan file JKS dan kata sandinya di luar repo.
 
 ## Isi aplikasi
 
@@ -98,9 +94,8 @@ menit, ihtiyat +2 menit untuk Subuh/Dzuhur/Ashar/Maghrib/Isya.
 (Jakarta) sebelum rilis** — lihat `imsakiyah/PrayerTimes.kt`.
 
 Pengingat sahur (30 menit sebelum Imsak) dan berbuka (saat Maghrib)
-dijadwalkan via WorkManager (best-effort). Untuk keandalan penuh,
-pengguna perlu mengizinkan alarm tepat waktu (izin exact-alarm) — aplikasi
-akan tetap berfungsi tanpa itu, hanya pengingat bisa terlambat.
+dijadwalkan via WorkManager. Pengingat dapat tertunda saat Android
+membatasi proses latar belakang.
 
 ## Iklan (AdMob)
 
@@ -133,11 +128,9 @@ akan tetap berfungsi tanpa itu, hanya pengingat bisa terlambat.
 
 ## Keterbatasan yang diketahui
 
-- Build ini **belum pernah dicompile** di mesin pembuatnya (tidak ada
-  JDK/Android SDK) — compile pertama dilakukan di Android Studio.
+- APK debug berhasil dibangun di Windows dengan Gradle 8.11.1, JDK 21,
+  dan Android SDK 36. Uji instalasi serta fitur di perangkat masih diperlukan.
 - Jadwal imsakiyah adalah hasil hitungan lokal, bukan jadwal resmi
   Kemenag (lihat catatan di atas).
-- Pengingat via WorkManager bersifat best-effort (bisa tertunda bila
-  sistem membatasi background work / tanpa izin exact-alarm).
 - Fase 2 (belum ada): kalkulator zakat fitrah, tadarus/khatam tracker,
   kuis Ramadhan.
