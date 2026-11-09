@@ -357,8 +357,8 @@ private fun ReminderCard(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
 @Composable
 private fun JuzItem(juz: JuzInfo, done: Boolean, onToggle: () -> Unit) {
     val cardHeight = 42.dp + with(LocalDensity.current) {
-        (MaterialTheme.typography.titleSmall.lineHeight +
-            MaterialTheme.typography.bodySmall.lineHeight * 3).toDp()
+        MaterialTheme.typography.titleSmall.lineHeight.toDp() +
+            (MaterialTheme.typography.bodySmall.lineHeight * 3).toDp()
     }
     Card(
         onClick = onToggle,
