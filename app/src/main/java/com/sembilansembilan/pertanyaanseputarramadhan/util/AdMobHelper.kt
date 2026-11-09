@@ -7,6 +7,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 
@@ -29,6 +30,16 @@ object AdMobHelper {
     const val INTERSTITIAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712"
 
     fun initialize(context: Context) {
+        // QW-3 — rating konten iklan "G" (General audiences, paling aman
+        // untuk aplikasi keluarga). Ini membatasi iklan ke konten yang cocok
+        // untuk semua umur; pemblokiran kategori sensitif (judi, pinjol,
+        // dll.) tetap harus dilakukan di konsol AdMob — lihat README.
+        // Harus dipanggil SEBELUM MobileAds.initialize.
+        MobileAds.setRequestConfiguration(
+            RequestConfiguration.Builder()
+                .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
+                .build()
+        )
         MobileAds.initialize(context)
     }
 

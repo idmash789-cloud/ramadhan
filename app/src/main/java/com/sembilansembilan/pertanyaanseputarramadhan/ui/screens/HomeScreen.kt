@@ -1,5 +1,6 @@
 package com.sembilansembilan.pertanyaanseputarramadhan.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,15 +10,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Article
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -29,15 +36,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.HijriCalendar
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.HomeViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdBanner
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.SectionTitle
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatHitungMundur
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatJam
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.formatTanggalIndonesia
+import com.sembilansembilan.pertanyaanseputarramadhan.util.ScheduleImageCard
 import java.time.LocalTime
 
 @Composable
@@ -48,6 +58,9 @@ fun HomeScreen(
     onOpenNu: () -> Unit,
     onOpenPiss: () -> Unit,
     onOpenKultum: () -> Unit,
+    onOpenZakat: () -> Unit,
+    onOpenSunnah: () -> Unit,
+    onOpenTadarus: () -> Unit,
 ) {
     val state by homeVm.uiState.collectAsState()
 
@@ -82,6 +95,12 @@ fun HomeScreen(
                     text = formatTanggalIndonesia(state.date),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold
+                )
+                // QW-3: tanggal Hijriah hari ini (perkiraan, ±1 hari) —
+                // label tahun Hijriah di Beranda, mis. "1 Ramadhan 1448 H".
+                Text(
+                    text = "${HijriCalendar.formatHijri(HijriCalendar.gregorianToHijri(state.date))} (perkiraan)",
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -149,6 +168,25 @@ fun HomeScreen(
                     JadwalRow("Isya", times.isha)
                 }
             }
+        }
+
+        // Bagikan jadwal hari ini sebagai gambar (QW-5).
+        val context = LocalContext.current
+        Button(
+            onClick = {
+                val ok = ScheduleImageCard.shareScheduleImage(context, state)
+                if (!ok) {
+                    Toast.makeText(context, "Jadwal belum tersedia", Toast.LENGTH_SHORT).show()
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Share,
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Bagikan sebagai Gambar")
         }
 
         // Dua kartu menu.
@@ -272,6 +310,83 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Kultum Ramadhan",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+
+        // Kartu menu Quick Wins (QW-2 Kalkulator Zakat, QW-4 Puasa Sunnah,
+        // QW-5 Tadarus) — digabung satu baris agar Beranda tetap rapi.
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            ElevatedCard(
+                onClick = onOpenZakat,
+                modifier = Modifier.weight(1f)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Calculate,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Kalkulator Zakat",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            ElevatedCard(
+                onClick = onOpenSunnah,
+                modifier = Modifier.weight(1f)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.DateRange,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Puasa Sunnah",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            ElevatedCard(
+                onClick = onOpenTadarus,
+                modifier = Modifier.weight(1f)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Book,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Tadarus 30 Juz",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center

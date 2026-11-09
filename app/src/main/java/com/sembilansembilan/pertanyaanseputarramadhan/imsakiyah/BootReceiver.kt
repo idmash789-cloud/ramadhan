@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.sembilansembilan.pertanyaanseputarramadhan.data.SettingsStore
+import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.SunnahReminderScheduler
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -23,6 +24,10 @@ class BootReceiver : BroadcastReceiver() {
             }
             if (settings.remindersEnabled) {
                 ReminderScheduler.schedule(appContext, settings.cityName)
+            }
+            // QW-4: jadwalkan ulang pengingat puasa sunnah bila aktif.
+            if (settings.sunnahRemindersEnabled) {
+                SunnahReminderScheduler.schedule(appContext)
             }
         }
     }

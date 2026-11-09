@@ -29,8 +29,30 @@ class SettingsViewModel(private val settingsStore: SettingsStore) : ViewModel() 
         viewModelScope.launch { settingsStore.setRemindersEnabled(enabled) }
     }
 
+    // QW-4: pengingat puasa sunnah.
+    fun setSunnahRemindersEnabled(enabled: Boolean) {
+        viewModelScope.launch { settingsStore.setSunnahRemindersEnabled(enabled) }
+    }
+
     fun toggleBookmark(key: String) {
         viewModelScope.launch { settingsStore.toggleBookmark(key) }
+    }
+
+    // --- QW-1: prompt rating sopan ---
+    fun setRatingPromptState(state: String) {
+        viewModelScope.launch { settingsStore.setRatingPromptState(state) }
+    }
+
+    fun recordDetailOpen() {
+        viewModelScope.launch { settingsStore.recordDetailOpen() }
+    }
+
+    fun resetDetailOpenCount() {
+        viewModelScope.launch { settingsStore.resetDetailOpenCount() }
+    }
+
+    fun recordShared() {
+        viewModelScope.launch { settingsStore.recordShared() }
     }
 
     fun isBookmarked(key: String): Boolean = key in settings.value.bookmarks

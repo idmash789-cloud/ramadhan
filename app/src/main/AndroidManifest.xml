@@ -28,6 +28,17 @@
             </intent-filter>
         </activity>
 
+        <!-- QW-5: berbagi kartu jadwal sebagai gambar (FileProvider). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- Jadwal ulang pengingat sahur/berbuka setelah HP restart. -->
         <receiver
             android:name=".imsakiyah.BootReceiver"

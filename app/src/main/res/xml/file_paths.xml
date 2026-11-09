@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- QW-5: kartu jadwal imsakiyah (PNG) yang dibagikan dari cacheDir/shared/. -->
+    <cache-path name="shared_images" path="shared/" />
+</paths>

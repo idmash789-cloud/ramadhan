@@ -41,7 +41,12 @@ class PissKtbViewModel(private val settingsStore: SettingsStore) : ViewModel() {
     }
 
     fun toggleExpanded(id: Int) {
-        _expandedId.value = if (_expandedId.value == id) null else id
+        val expanding = _expandedId.value != id
+        _expandedId.value = if (expanding) id else null
+        // QW-1: hitung jawaban yang dibuka untuk pemicu prompt rating.
+        if (expanding) {
+            viewModelScope.launch { settingsStore.recordDetailOpen() }
+        }
     }
 
     fun toggleBookmark(id: Int) {

@@ -44,11 +44,10 @@ import androidx.core.content.ContextCompat
 import com.sembilansembilan.pertanyaanseputarramadhan.data.CITIES
 import com.sembilansembilan.pertanyaanseputarramadhan.data.DarkMode
 import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.ReminderScheduler
+import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.SunnahReminderScheduler
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.PLAY_STORE_URL
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.SectionTitle
-
-private const val PLAY_STORE_URL =
-    "https://play.google.com/store/apps/details?id=com.sembilansembilan.pertanyaanseputarramadhan"
 
 @Composable
 fun SettingsScreen(settingsVm: SettingsViewModel) {
@@ -62,6 +61,17 @@ fun SettingsScreen(settingsVm: SettingsViewModel) {
         if (granted) {
             settingsVm.setRemindersEnabled(true)
             ReminderScheduler.schedule(context.applicationContext, settings.cityName)
+        }
+    }
+
+    // QW-4: launcher izin sendiri untuk pengingat puasa sunnah (callback-nya
+    // memanggil setter yang berbeda — JANGAN pakai ulang permissionLauncher).
+    val sunnahPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            settingsVm.setSunnahRemindersEnabled(true)
+            SunnahReminderScheduler.schedule(context.applicationContext)
         }
     }
 
@@ -164,6 +174,48 @@ fun SettingsScreen(settingsVm: SettingsViewModel) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Sahur 30 menit sebelum Imsak, berbuka saat Maghrib. Pengingat bersifat best-effort.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                // QW-4: pengingat puasa sunnah (19:00 sehari sebelum puasa).
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Pengingat puasa sunnah",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(
+                        checked = settings.sunnahRemindersEnabled,
+                        onCheckedChange = { enabled ->
+                            if (enabled) {
+                                val needsPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                    ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.POST_NOTIFICATIONS
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                if (needsPermission) {
+                                    sunnahPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else {
+                                    settingsVm.setSunnahRemindersEnabled(true)
+                                    SunnahReminderScheduler.schedule(
+                                        context.applicationContext
+                                    )
+                                }
+                            } else {
+                                settingsVm.setSunnahRemindersEnabled(false)
+                                SunnahReminderScheduler.cancel(context.applicationContext)
+                            }
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Pengingat pukul 19:00 sehari sebelum puasa sunnah (Senin–Kamis, Ayyamul Bidh, Arafah, Syawal, Tarwiyah, Tasu'a & Asyura). Pengingat bersifat best-effort.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

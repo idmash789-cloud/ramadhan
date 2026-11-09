@@ -31,10 +31,14 @@ import androidx.navigation.navArgument
 import com.sembilansembilan.pertanyaanseputarramadhan.data.DarkMode
 import com.sembilansembilan.pertanyaanseputarramadhan.data.SettingsStore
 import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.ReminderScheduler
+import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.SunnahReminderScheduler
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.HomeViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.PissKtbViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.QuestionsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.SunnahViewModel
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.TadarusViewModel
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.ZakatViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BookmarksScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BukuSakuDetailScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BukuSakuScreen
@@ -46,6 +50,9 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.NuOnlineScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.PissKtbScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.QuestionsScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.SettingsScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.SunnahScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.TadarusScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.ZakatScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.RamadhanTheme
 import com.sembilansembilan.pertanyaanseputarramadhan.util.AdMobHelper
 import com.sembilansembilan.pertanyaanseputarramadhan.util.ConsentManager
@@ -66,6 +73,10 @@ class MainActivity : ComponentActivity() {
             if (settings.remindersEnabled) {
                 ReminderScheduler.schedule(applicationContext, settings.cityName)
             }
+            // QW-4: jadwalkan ulang pengingat puasa sunnah bila aktif.
+            if (settings.sunnahRemindersEnabled) {
+                SunnahReminderScheduler.schedule(applicationContext)
+            }
         }
         setContent {
             val settingsVm: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory(settingsStore))
@@ -79,7 +90,10 @@ class MainActivity : ComponentActivity() {
                 val homeVm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(settingsStore))
                 val questionsVm: QuestionsViewModel = viewModel(factory = QuestionsViewModel.Factory(settingsStore))
                 val pissVm: PissKtbViewModel = viewModel(factory = PissKtbViewModel.Factory(settingsStore))
-                AppNav(settingsVm, homeVm, questionsVm, pissVm)
+                val zakatVm: ZakatViewModel = viewModel(factory = ZakatViewModel.Factory(settingsStore))
+                val sunnahVm: SunnahViewModel = viewModel(factory = SunnahViewModel.Factory())
+                val tadarusVm: TadarusViewModel = viewModel(factory = TadarusViewModel.Factory(settingsStore))
+                AppNav(settingsVm, homeVm, questionsVm, pissVm, zakatVm, sunnahVm, tadarusVm)
             }
         }
     }
@@ -101,6 +115,9 @@ fun AppNav(
     homeVm: HomeViewModel,
     questionsVm: QuestionsViewModel,
     pissVm: PissKtbViewModel,
+    zakatVm: ZakatViewModel,
+    sunnahVm: SunnahViewModel,
+    tadarusVm: TadarusViewModel,
 ) {
     val navController = rememberNavController()
     val backStack by navController.currentBackStackEntryAsState()
@@ -137,10 +154,16 @@ fun AppNav(
                     onOpenBukuSaku = { navController.navigate("bukusaku") },
                     onOpenNu = { navController.navigate("nu") },
                     onOpenPiss = { navController.navigate("piss") },
-                    onOpenKultum = { navController.navigate("kultum") }
+                    onOpenKultum = { navController.navigate("kultum") },
+                    onOpenZakat = { navController.navigate("zakat") },
+                    onOpenSunnah = { navController.navigate("sunnah") },
+                    onOpenTadarus = { navController.navigate("tadarus") }
                 )
             }
             composable("questions") { QuestionsScreen(questionsVm, settingsVm) }
+            composable("zakat") { ZakatScreen(zakatVm) }
+            composable("sunnah") { SunnahScreen(sunnahVm) }
+            composable("tadarus") { TadarusScreen(tadarusVm) }
             composable("nu") {
                 NuOnlineScreen(
                     settingsVm = settingsVm,

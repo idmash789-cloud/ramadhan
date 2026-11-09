@@ -29,8 +29,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -44,6 +48,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.PissKtbViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdBanner
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.RatingPromptDialog
 import com.sembilansembilan.pertanyaanseputarramadhan.util.InterstitialGate
 
 /**
@@ -61,6 +66,30 @@ fun PissKtbScreen(
     val questions by pissVm.filteredQuestions.collectAsState()
     val expandedId by pissVm.expandedId.collectAsState()
     val settings by settingsVm.settings.collectAsState()
+
+    // QW-1: prompt rating sopan — sama seperti di layar 99 Pertanyaan.
+    var showRatingDialog by remember { mutableStateOf(false) }
+    val ratingEligible = settings.ratingPromptState == "unasked" &&
+        (settings.detailOpenCount >= 3 || settings.sharedOnce)
+    LaunchedEffect(ratingEligible) {
+        if (ratingEligible) showRatingDialog = true
+    }
+    if (showRatingDialog) {
+        RatingPromptDialog(
+            onRate = {
+                settingsVm.setRatingPromptState("rated")
+                showRatingDialog = false
+            },
+            onLater = {
+                settingsVm.resetDetailOpenCount()
+                showRatingDialog = false
+            },
+            onNever = {
+                settingsVm.setRatingPromptState("never")
+                showRatingDialog = false
+            },
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
@@ -112,7 +141,8 @@ fun PissKtbScreen(
                         expanded = expandedId == question.id,
                         bookmarked = "p:${question.id}" in settings.bookmarks,
                         onToggleExpanded = { pissVm.toggleExpanded(question.id) },
-                        onToggleBookmark = { pissVm.toggleBookmark(question.id) }
+                        onToggleBookmark = { pissVm.toggleBookmark(question.id) },
+                        onShared = { settingsVm.recordShared() }
                     )
                 }
             }
@@ -129,6 +159,7 @@ private fun PissQuestionCard(
     bookmarked: Boolean,
     onToggleExpanded: () -> Unit,
     onToggleBookmark: () -> Unit,
+    onShared: () -> Unit,
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -221,6 +252,8 @@ private fun PissQuestionCard(
                             context.startActivity(
                                 Intent.createChooser(intent, "Bagikan tanya-jawab")
                             )
+                            // QW-1: bagikan jawaban = salah satu pemicu prompt rating.
+                            onShared()
                             (context as? Activity)?.let { activity ->
                                 InterstitialGate.maybeShow(activity)
                             }

@@ -28,6 +28,26 @@ import kotlin.math.tan
  * PENTING: waktu hasil hitungan ini WAJIB dicocokkan dengan jadwal resmi
  * Kemenag (Jakarta) sebelum rilis — ini aproksimasi astronomis, bukan
  * jadwal resmi.
+ *
+ * VALIDASI vs KEMENAG (QW-3, 9 Nov 2026) — jadwal resmi SIHAT Kemenag
+ * (bimasislam.kemenag.go.id/api/sihat, KOTA JAKARTA, lintang 6°10'12.32"S
+ * bujur 106°49'51.78"E) dibandingkan dengan hasil [compute] untuk koordinat
+ * Jakarta aplikasi (-6.2088, 106.8456, WIB). Selisih = aplikasi − Kemenag:
+ *
+ * | Tanggal        | Imsak | Subuh | Terbit | Dzuhur | Ashar | Maghrib | Isya |
+ * |----------------|-------|-------|--------|--------|-------|---------|------|
+ * | 9 Nov 2026     | -1    | -1    | +3     | -2     | -1    | -1      | -1   |
+ * | 1 Feb 2027     | -1    | -1    | +3     | -2     | -1    | -2      | -1   |
+ * | 8 Feb 2027     | -1    | -1    | +4     | -1     | -1    | -1      | 0    |
+ * | (1 Ramadhan 1448H, prakiraan) |       |       |        |        |       |         |      |
+ *
+ * Kesimpulan: selisih MAKSIMAL 4 menit (Terbit), selebihnya 0–2 menit.
+ * Aplikasi cenderung 1 menit LEBIH AWAL pada Subuh/Maghrib/Isya (arah yang
+ * aman untuk puasa: Imsak lebih awal, berbuka 1 menit lebih awal — masih
+ * dalam toleransi ihtiyat). Terbit aplikasi 3–4 menit LEBIH LAMBAT dari
+ * Kemenag (kemungkinan perbedaan model refraksi/ketinggian pengamat);
+ * Terbit bukan patokan ibadah puasa/salat, jadi dampaknya kecil. Validasi
+ * ulang disarankan bila parameter diubah. Detail lengkap di README.
  */
 object PrayerTimes {
 

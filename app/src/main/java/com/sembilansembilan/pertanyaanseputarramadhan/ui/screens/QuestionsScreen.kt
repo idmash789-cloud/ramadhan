@@ -28,8 +28,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -43,6 +47,7 @@ import com.sembilansembilan.pertanyaanseputarramadhan.ui.QuestionsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.AdBanner
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.RatingPromptDialog
 import com.sembilansembilan.pertanyaanseputarramadhan.util.InterstitialGate
 
 @Composable
@@ -54,6 +59,32 @@ fun QuestionsScreen(
     val questions by questionsVm.filteredQuestions.collectAsState()
     val expandedId by questionsVm.expandedId.collectAsState()
     val settings by settingsVm.settings.collectAsState()
+
+    // QW-1: prompt rating sopan — muncul SEKALI di layar ini (bukan di
+    // Beranda, agar tidak mengganggu saat membaca jadwal), setelah pengguna
+    // membuka 3 jawaban atau membagikan 1 jawaban.
+    var showRatingDialog by remember { mutableStateOf(false) }
+    val ratingEligible = settings.ratingPromptState == "unasked" &&
+        (settings.detailOpenCount >= 3 || settings.sharedOnce)
+    LaunchedEffect(ratingEligible) {
+        if (ratingEligible) showRatingDialog = true
+    }
+    if (showRatingDialog) {
+        RatingPromptDialog(
+            onRate = {
+                settingsVm.setRatingPromptState("rated")
+                showRatingDialog = false
+            },
+            onLater = {
+                settingsVm.resetDetailOpenCount()
+                showRatingDialog = false
+            },
+            onNever = {
+                settingsVm.setRatingPromptState("never")
+                showRatingDialog = false
+            },
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
@@ -108,7 +139,8 @@ fun QuestionsScreen(
                         expanded = expandedId == question.id,
                         bookmarked = "q:${question.id}" in settings.bookmarks,
                         onToggleExpanded = { questionsVm.toggleExpanded(question.id) },
-                        onToggleBookmark = { questionsVm.toggleBookmark(question.id) }
+                        onToggleBookmark = { questionsVm.toggleBookmark(question.id) },
+                        onShared = { settingsVm.recordShared() }
                     )
                 }
             }
@@ -125,6 +157,7 @@ private fun QuestionCard(
     bookmarked: Boolean,
     onToggleExpanded: () -> Unit,
     onToggleBookmark: () -> Unit,
+    onShared: () -> Unit,
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -211,6 +244,8 @@ private fun QuestionCard(
                             context.startActivity(
                                 Intent.createChooser(intent, "Bagikan pertanyaan")
                             )
+                            // QW-1: bagikan jawaban = salah satu pemicu prompt rating.
+                            onShared()
                             (context as? Activity)?.let { activity ->
                                 InterstitialGate.maybeShow(activity)
                             }

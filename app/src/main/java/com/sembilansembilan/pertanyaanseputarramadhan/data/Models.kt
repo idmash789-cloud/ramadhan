@@ -89,4 +89,40 @@ data class AppSettings(
      * PISS-KTB, "k:<night>" untuk kultum.
      */
     val bookmarks: Set<String> = emptySet(),
+    /**
+     * Status prompt rating (QW-1): "unasked" (belum pernah ditanya),
+     * "later" (pengguna menekan "Nanti" — boleh ditanya lagi nanti),
+     * "never" ("Jangan tanya lagi"), "rated" (sudah memberi rating).
+     */
+    val ratingPromptState: String = "unasked",
+    /** Jumlah jawaban yang dibuka (detail) sejak terakhir prompt rating. */
+    val detailOpenCount: Int = 0,
+    /** True bila pengguna pernah membagikan satu jawaban/aplikasi. */
+    val sharedOnce: Boolean = false,
+    /**
+     * Harga tersimpan untuk Kalkulator Zakat (QW-2). Default sama dengan
+     * ZakatCalculator.DEFAULT_RICE_PRICE_PER_KG / DEFAULT_GOLD_PRICE_PER_GRAM /
+     * DEFAULT_FIDYAH_MEAL_PRICE; pengguna bisa mengubahnya di layar Kalkulator Zakat.
+     */
+    val ricePricePerKg: Long = 15_000L,
+    val goldPricePerGram: Long = 2_000_000L,
+    val fidyahMealPrice: Long = 20_000L,
+    /** Toggle pengingat puasa sunnah (QW-4). Default AKTIF. */
+    val sunnahRemindersEnabled: Boolean = true,
+    /**
+     * Juz tadarus yang sudah selesai dibaca: "1".."30" (QW-5).
+     * Disimpan sebagai stringSet di DataStore (key "tadarus_completed").
+     */
+    val tadarusCompleted: Set<String> = emptySet(),
+    /**
+     * Target tanggal khatam, format ISO "yyyy-MM-dd" (QW-5).
+     * "" = belum diset. Key DataStore "tadarus_target_date".
+     */
+    val tadarusTargetDate: String = "",
+    /**
+     * Toggle pengingat harian tadarus (QW-5). HANYA menyimpan pilihan
+     * pengguna — penjadwalan WorkManager adalah langkah lanjutan.
+     * Key DataStore "tadarus_reminder_enabled".
+     */
+    val tadarusReminderEnabled: Boolean = false,
 )
