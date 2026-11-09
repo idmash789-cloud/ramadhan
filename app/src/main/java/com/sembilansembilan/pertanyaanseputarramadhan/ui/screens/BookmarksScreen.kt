@@ -23,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sembilansembilan.pertanyaanseputarramadhan.data.bukuSakuSections
+import com.sembilansembilan.pertanyaanseputarramadhan.data.kultumRamadhan
+import com.sembilansembilan.pertanyaanseputarramadhan.data.nuOnlineArticles
+import com.sembilansembilan.pertanyaanseputarramadhan.data.pissKtbQuestions
 import com.sembilansembilan.pertanyaanseputarramadhan.data.ramadhanQuestions
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.components.EmptyState
@@ -33,14 +36,23 @@ fun BookmarksScreen(
     settingsVm: SettingsViewModel,
     onOpenQuestion: (Int) -> Unit,
     onOpenSection: (String) -> Unit,
+    onOpenArticle: (String) -> Unit,
+    onOpenPiss: (Int) -> Unit,
+    onOpenKultum: (Int) -> Unit,
 ) {
     val settings by settingsVm.settings.collectAsState()
     val bookmarks = settings.bookmarks
 
     val bookmarkedQuestions = ramadhanQuestions.filter { "q:${it.id}" in bookmarks }
     val bookmarkedSections = bukuSakuSections.filter { "s:${it.id}" in bookmarks }
+    val bookmarkedArticles = nuOnlineArticles.filter { "n:${it.id}" in bookmarks }
+    val bookmarkedPiss = pissKtbQuestions.filter { "p:${it.id}" in bookmarks }
+    val bookmarkedKultums = kultumRamadhan.filter { "k:${it.night}" in bookmarks }
 
-    if (bookmarkedQuestions.isEmpty() && bookmarkedSections.isEmpty()) {
+    if (bookmarkedQuestions.isEmpty() && bookmarkedSections.isEmpty() &&
+        bookmarkedArticles.isEmpty() && bookmarkedPiss.isEmpty() &&
+        bookmarkedKultums.isEmpty()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -48,7 +60,7 @@ fun BookmarksScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             EmptyState(
-                "Belum ada bookmark. Ketuk ikon bookmark pada pertanyaan atau topik untuk menyimpannya di sini."
+                "Belum ada bookmark. Ketuk ikon bookmark pada pertanyaan, topik, artikel, tanya-jawab, atau kultum untuk menyimpannya di sini."
             )
         }
         return
@@ -118,6 +130,115 @@ fun BookmarksScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+
+        if (bookmarkedArticles.isNotEmpty()) {
+            item {
+                SectionTitle("Kajian NU Online")
+            }
+            items(bookmarkedArticles, key = { "n:${it.id}" }) { article ->
+                Card(
+                    onClick = { onOpenArticle(article.id) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = article.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+
+        if (bookmarkedPiss.isNotEmpty()) {
+            item {
+                SectionTitle("Tanya Jawab PISS-KTB")
+            }
+            items(bookmarkedPiss, key = { "p:${it.id}" }) { question ->
+                Card(
+                    onClick = { onOpenPiss(question.id) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${question.id}.",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = question.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+
+        if (bookmarkedKultums.isNotEmpty()) {
+            item {
+                SectionTitle("Kultum Ramadhan")
+            }
+            items(bookmarkedKultums, key = { "k:${it.night}" }) { kultum ->
+                Card(
+                    onClick = { onOpenKultum(kultum.night) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Malam ${kultum.night}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = kultum.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp)
                         )
                         Icon(
                             imageVector = Icons.Filled.ChevronRight,

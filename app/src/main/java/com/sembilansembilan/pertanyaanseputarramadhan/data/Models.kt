@@ -24,6 +24,50 @@ data class BukuSakuSection(
     val content: String,
 )
 
+/**
+ * Satu artikel Kajian NU Online. [content] memakai gaya markdown yang sama
+ * seperti [BukuSakuSection] (judul "## "/"### ", tebal "**...**", daftar,
+ * tabel "| ... |", baris Arab) dan dirender oleh MarkdownText. [source]
+ * adalah URL artikel NU Online asal materi (atribusi).
+ * Isi ditulis ulang (parafrase) dari artikel sumber — bukan salinan mentah.
+ */
+data class NuArticle(
+    val id: String,
+    val title: String,
+    val content: String,
+    val source: String,
+)
+
+/**
+ * Satu tanya-jawab fikih dari PISS-KTB (forum kajian berbasis kitab kuning).
+ * Pola sama seperti [Question] ditambah [source] (URL halaman PISS-KTB asal).
+ * Jawaban diparafrase dari jawaban di situs; referensi kitab ditulis persis
+ * seperti tercantum di sumber.
+ */
+data class PissQuestion(
+    val id: Int,
+    val title: String,
+    val question: String,
+    val answer: String,
+    val reference: String?,
+    val source: String,
+)
+
+/**
+ * Satu kultum Ramadhan (kuliah tujuh menit), satu untuk tiap malam Ramadhan
+ * ([night] 1–30). [quote] hanya kutipan Al-Qur'an/hadits yang sudah dikenal
+ * luas dan terverifikasi; bila ragu, isikan null. [content] adalah isi kultum
+ * (±7 menit baca) yang ditulis orisinal untuk aplikasi ini.
+ */
+data class Kultum(
+    val night: Int,
+    val title: String,
+    val theme: String,
+    val quote: String?,
+    val quoteSource: String?,
+    val content: String,
+)
+
 /** Kota untuk jadwal imsakiyah. [timezoneHours] = selisih dari UTC dalam jam. */
 data class City(
     val name: String,
@@ -40,7 +84,9 @@ data class AppSettings(
     val remindersEnabled: Boolean = false,
     /**
      * Kunci bookmark: "q:<questionId>" untuk pertanyaan,
-     * "s:<sectionId>" untuk seksi Buku Saku.
+     * "s:<sectionId>" untuk seksi Buku Saku, "n:<articleId>" untuk
+     * artikel Kajian NU Online, "p:<pissId>" untuk tanya-jawab
+     * PISS-KTB, "k:<night>" untuk kultum.
      */
     val bookmarks: Set<String> = emptySet(),
 )

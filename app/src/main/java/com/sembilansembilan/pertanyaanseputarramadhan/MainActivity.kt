@@ -32,12 +32,18 @@ import com.sembilansembilan.pertanyaanseputarramadhan.data.DarkMode
 import com.sembilansembilan.pertanyaanseputarramadhan.data.SettingsStore
 import com.sembilansembilan.pertanyaanseputarramadhan.imsakiyah.ReminderScheduler
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.HomeViewModel
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.PissKtbViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.QuestionsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.SettingsViewModel
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BookmarksScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BukuSakuDetailScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.BukuSakuScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.HomeScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.KultumDetailScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.KultumScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.NuOnlineDetailScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.NuOnlineScreen
+import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.PissKtbScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.QuestionsScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.screens.SettingsScreen
 import com.sembilansembilan.pertanyaanseputarramadhan.ui.theme.RamadhanTheme
@@ -72,7 +78,8 @@ class MainActivity : ComponentActivity() {
             RamadhanTheme(darkTheme = darkTheme) {
                 val homeVm: HomeViewModel = viewModel(factory = HomeViewModel.Factory(settingsStore))
                 val questionsVm: QuestionsViewModel = viewModel(factory = QuestionsViewModel.Factory(settingsStore))
-                AppNav(settingsVm, homeVm, questionsVm)
+                val pissVm: PissKtbViewModel = viewModel(factory = PissKtbViewModel.Factory(settingsStore))
+                AppNav(settingsVm, homeVm, questionsVm, pissVm)
             }
         }
     }
@@ -93,6 +100,7 @@ fun AppNav(
     settingsVm: SettingsViewModel,
     homeVm: HomeViewModel,
     questionsVm: QuestionsViewModel,
+    pissVm: PissKtbViewModel,
 ) {
     val navController = rememberNavController()
     val backStack by navController.currentBackStackEntryAsState()
@@ -126,10 +134,48 @@ fun AppNav(
                 HomeScreen(
                     homeVm = homeVm,
                     onOpenQuestions = { navController.navigate("questions") },
-                    onOpenBukuSaku = { navController.navigate("bukusaku") }
+                    onOpenBukuSaku = { navController.navigate("bukusaku") },
+                    onOpenNu = { navController.navigate("nu") },
+                    onOpenPiss = { navController.navigate("piss") },
+                    onOpenKultum = { navController.navigate("kultum") }
                 )
             }
             composable("questions") { QuestionsScreen(questionsVm, settingsVm) }
+            composable("nu") {
+                NuOnlineScreen(
+                    settingsVm = settingsVm,
+                    onOpenArticle = { articleId -> navController.navigate("nu/$articleId") }
+                )
+            }
+            composable(
+                "nu/{articleId}",
+                arguments = listOf(navArgument("articleId") { type = NavType.StringType })
+            ) { entry ->
+                val articleId = entry.arguments?.getString("articleId") ?: ""
+                NuOnlineDetailScreen(
+                    articleId = articleId,
+                    settingsVm = settingsVm,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable("piss") { PissKtbScreen(pissVm, settingsVm) }
+            composable("kultum") {
+                KultumScreen(
+                    settingsVm = settingsVm,
+                    onOpenKultum = { night -> navController.navigate("kultum/$night") }
+                )
+            }
+            composable(
+                "kultum/{night}",
+                arguments = listOf(navArgument("night") { type = NavType.IntType })
+            ) { entry ->
+                val night = entry.arguments?.getInt("night") ?: 1
+                KultumDetailScreen(
+                    night = night,
+                    settingsVm = settingsVm,
+                    onBack = { navController.popBackStack() }
+                )
+            }
             composable("bukusaku") {
                 BukuSakuScreen(
                     settingsVm = settingsVm,
@@ -155,7 +201,14 @@ fun AppNav(
                         questionsVm.toggleExpanded(id)
                         navController.navigate("questions")
                     },
-                    onOpenSection = { sectionId -> navController.navigate("bukusaku/$sectionId") }
+                    onOpenSection = { sectionId -> navController.navigate("bukusaku/$sectionId") },
+                    onOpenArticle = { articleId -> navController.navigate("nu/$articleId") },
+                    onOpenPiss = { id ->
+                        pissVm.setSearchQuery("")
+                        pissVm.toggleExpanded(id)
+                        navController.navigate("piss")
+                    },
+                    onOpenKultum = { night -> navController.navigate("kultum/$night") }
                 )
             }
             composable("settings") { SettingsScreen(settingsVm) }
